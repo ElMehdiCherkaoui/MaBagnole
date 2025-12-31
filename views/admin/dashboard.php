@@ -9,17 +9,12 @@
 
 <body class="bg-gray-900 text-gray-100 min-h-screen font-sans flex">
 
-    <!-- SIDEBAR -->
-    <!-- LEFT SIDEBAR -->
     <aside class="bg-gray-950 w-64 min-h-screen flex flex-col fixed border-r border-gray-800">
-        <!-- Logo -->
         <div class="p-6 flex items-center justify-center border-b border-gray-800">
             <span class="text-2xl font-bold text-red-500">MaBagnole Admin</span>
         </div>
 
-        <!-- Navigation -->
         <nav class="flex-1 px-4 py-6 space-y-2">
-            <!-- Use 'bg-red-700 text-white' for selected -->
             <a href="dashboard.php"
                 class="block px-4 py-3 rounded-lg bg-red-700 text-white  font-semibold hover:bg-red-900 hover:text-white transition"
                 id="dashboardLink">Dashboard</a>
@@ -45,11 +40,9 @@
         </nav>
     </aside>
 
-    <!-- MAIN CONTENT -->
     <main class="flex-1 ml-64 p-8">
         <h1 class="text-4xl font-bold text-orange-500 mb-12">Admin Dashboard</h1>
 
-        <!-- Statistics Cards -->
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
             <div
                 class="bg-gray-800 p-6 rounded-2xl border-l-4 border-orange-500 shadow hover:scale-105 transform transition">
@@ -73,7 +66,6 @@
             </div>
         </div>
 
-        <!-- Admin Action Cards -->
 
     </main>
 

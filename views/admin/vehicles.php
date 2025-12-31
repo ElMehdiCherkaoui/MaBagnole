@@ -9,7 +9,6 @@
 
 <body class="bg-gray-900 text-gray-100 min-h-screen font-sans flex">
 
-    <!-- LEFT SIDEBAR -->
     <aside class="bg-gray-950 w-64 min-h-screen flex flex-col fixed border-r border-gray-800">
         <div class="p-6 flex items-center justify-center border-b border-gray-800">
             <span class="text-2xl font-bold text-red-500">MaBagnole Admin</span>
@@ -31,18 +30,15 @@
         </nav>
     </aside>
 
-    <!-- MAIN CONTENT -->
     <main class="flex-1 ml-64 p-8">
         <h1 class="text-4xl font-bold text-red-500 mb-8">Manage Vehicles</h1>
 
-        <!-- Add Vehicle Button -->
         <div class="mb-6">
             <button class="px-6 py-3 bg-red-600 hover:bg-red-700 text-white font-semibold rounded-lg shadow">
                 Add New Vehicle
             </button>
         </div>
 
-        <!-- Vehicles Table -->
         <div class="overflow-x-auto">
             <table class="min-w-full bg-gray-800 rounded-xl border border-gray-700">
                 <thead>
@@ -56,7 +52,6 @@
                     </tr>
                 </thead>
                 <tbody class="text-gray-100">
-                    <!-- Sample Vehicle Row -->
                     <tr class="border-b border-gray-700 hover:bg-gray-700 transition">
                         <td class="px-6 py-4">1</td>
                         <td class="px-6 py-4">Tesla Model S</td>

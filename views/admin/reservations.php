@@ -9,23 +9,27 @@
 
 <body class="bg-gray-900 text-gray-100 min-h-screen font-sans flex">
 
-    <!-- LEFT SIDEBAR -->
     <aside class="bg-gray-950 w-64 min-h-screen flex flex-col fixed border-r border-gray-800">
         <div class="p-6 flex items-center justify-center border-b border-gray-800">
             <span class="text-2xl font-bold text-red-500">MaBagnole Admin</span>
         </div>
 
         <nav class="flex-1 px-4 py-6 space-y-2">
-            <a href="dashboard.php" class="block px-4 py-3 rounded-lg text-red-500 font-semibold hover:bg-red-900 hover:text-white transition">Dashboard</a>
-            <a href="vehicles.php" class="block px-4 py-3 rounded-lg text-red-500 font-semibold hover:bg-red-900 hover:text-white transition">Vehicles</a>
-            <a href="categories.php" class="block px-4 py-3 rounded-lg text-red-500 font-semibold hover:bg-red-900 hover:text-white transition">Categories</a>
-            <a href="reservations.php" class="block px-4 py-3 rounded-lg text-white bg-red-700 font-semibold transition">Reservations</a>
-            <a href="reviews.php" class="block px-4 py-3 rounded-lg text-red-500 font-semibold hover:bg-red-900 hover:text-white transition">Reviews</a>
-            <a href="#" class="block px-4 py-3 rounded-lg text-gray-400 font-semibold hover:bg-red-900 hover:text-white transition">Logout</a>
+            <a href="dashboard.php"
+                class="block px-4 py-3 rounded-lg text-red-500 font-semibold hover:bg-red-900 hover:text-white transition">Dashboard</a>
+            <a href="vehicles.php"
+                class="block px-4 py-3 rounded-lg text-red-500 font-semibold hover:bg-red-900 hover:text-white transition">Vehicles</a>
+            <a href="categories.php"
+                class="block px-4 py-3 rounded-lg text-red-500 font-semibold hover:bg-red-900 hover:text-white transition">Categories</a>
+            <a href="reservations.php"
+                class="block px-4 py-3 rounded-lg text-white bg-red-700 font-semibold transition">Reservations</a>
+            <a href="reviews.php"
+                class="block px-4 py-3 rounded-lg text-red-500 font-semibold hover:bg-red-900 hover:text-white transition">Reviews</a>
+            <a href="#"
+                class="block px-4 py-3 rounded-lg text-gray-400 font-semibold hover:bg-red-900 hover:text-white transition">Logout</a>
         </nav>
     </aside>
 
-    <!-- MAIN CONTENT -->
     <main class="flex-1 ml-64 p-8">
         <h1 class="text-4xl font-bold text-red-500 mb-8">Manage Reservations</h1>
 
@@ -44,7 +48,6 @@
                 </thead>
                 <tbody class="text-gray-100">
 
-                    <!-- Pending Reservation -->
                     <tr class="border-b border-gray-700 hover:bg-gray-700 transition">
                         <td class="px-6 py-4">1</td>
                         <td class="px-6 py-4">Tesla Model S</td>
@@ -52,15 +55,17 @@
                         <td class="px-6 py-4">Casablanca - 2026-01-10</td>
                         <td class="px-6 py-4">Rabat - 2026-01-15</td>
                         <td class="px-6 py-4">
-                            <span class="px-2 py-1 rounded-full bg-yellow-500 text-white font-semibold text-sm">Pending</span>
+                            <span
+                                class="px-2 py-1 rounded-full bg-yellow-500 text-white font-semibold text-sm">Pending</span>
                         </td>
                         <td class="px-6 py-4 flex gap-2">
-                            <button class="px-3 py-1 bg-green-600 hover:bg-green-700 rounded text-white font-semibold">Confirm</button>
-                            <button class="px-3 py-1 bg-red-800 hover:bg-red-900 rounded text-white font-semibold">Cancel</button>
+                            <button
+                                class="px-3 py-1 bg-green-600 hover:bg-green-700 rounded text-white font-semibold">Confirm</button>
+                            <button
+                                class="px-3 py-1 bg-red-800 hover:bg-red-900 rounded text-white font-semibold">Cancel</button>
                         </td>
                     </tr>
 
-                    <!-- Confirmed Reservation -->
                     <tr class="border-b border-gray-700 hover:bg-gray-700 transition">
                         <td class="px-6 py-4">2</td>
                         <td class="px-6 py-4">Range Rover</td>
@@ -68,14 +73,15 @@
                         <td class="px-6 py-4">Marrakech - 2026-02-01</td>
                         <td class="px-6 py-4">Casablanca - 2026-02-05</td>
                         <td class="px-6 py-4">
-                            <span class="px-2 py-1 rounded-full bg-green-600 text-white font-semibold text-sm">Confirmed</span>
+                            <span
+                                class="px-2 py-1 rounded-full bg-green-600 text-white font-semibold text-sm">Confirmed</span>
                         </td>
                         <td class="px-6 py-4 flex gap-2">
-                            <button class="px-3 py-1 bg-red-800 hover:bg-red-900 rounded text-white font-semibold">Cancel</button>
+                            <button
+                                class="px-3 py-1 bg-red-800 hover:bg-red-900 rounded text-white font-semibold">Cancel</button>
                         </td>
                     </tr>
 
-                    <!-- Cancelled Reservation -->
                     <tr class="border-b border-gray-700 hover:bg-gray-700 transition">
                         <td class="px-6 py-4">3</td>
                         <td class="px-6 py-4">Yamaha R1</td>
@@ -83,10 +89,10 @@
                         <td class="px-6 py-4">Rabat - 2026-03-05</td>
                         <td class="px-6 py-4">Marrakech - 2026-03-10</td>
                         <td class="px-6 py-4">
-                            <span class="px-2 py-1 rounded-full bg-gray-500 text-white font-semibold text-sm">Cancelled</span>
+                            <span
+                                class="px-2 py-1 rounded-full bg-gray-500 text-white font-semibold text-sm">Cancelled</span>
                         </td>
                         <td class="px-6 py-4">
-                            <!-- No actions for cancelled -->
                             <span class="text-gray-400 italic">No Actions</span>
                         </td>
                     </tr>
