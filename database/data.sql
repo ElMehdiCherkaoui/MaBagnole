@@ -46,7 +46,7 @@ create TABLE Review (
     Review_id INT AUTO_INCREMENT PRIMARY KEY,
     reviewRate INT,
     reviewComment VARCHAR(255) NOT NULL,
-    reviewDeleteTime DATETIME,
+    reviewDeleteTime DATETIME DEFAULT NULL,
     reviewIdUser INT,
     reviewIdVehicle INT,
     FOREIGN KEY (reviewIdUser) REFERENCES Users (Users_id),
