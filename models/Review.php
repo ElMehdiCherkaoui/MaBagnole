@@ -38,9 +38,41 @@ class Review
     {
         return "Review (Review_id: {$this->Review_id}, reviewRating: {$this->reviewRating})";
     }
-    public function listReviews() {
-        
+    public function listReviews()
+    {
+        $db = (new DataBase)->getConnection();
+        $sql = "SELECT * FROM Review
+        LEFT JOIN Users ON Review.reviewIdUser = Users.Users_id
+        LEFT JOIN Vehicle ON Review.reviewIdVehicle = Vehicle.Vehicle_id";
+        $stmt = $db->prepare($sql);
+        $stmt->execute();
+        return $stmt->fetchAll(PDO::FETCH_OBJ);
     }
-    public function editReviews() {}
-    public function softDelete() {}
+    public function editReviews($id)
+    {
+        $db = (new DataBase)->getConnection();
+        $sql = "INSERT INTO Review (reviewRate,reviewComment) VALUES (:Rate,:Comment) WHERE Review_id = :id";
+
+        $stmt = $db->prepare($sql);
+        $stmt->bindParam(':Rate', $this->reviewRating);
+        $stmt->bindParam(':Comment', $this->reviewComment);
+        $stmt->bindParam(':id', $id);
+        $check = $stmt->execute();
+        if ($check) {
+            return 'success';
+        }
+        return 'Lost Connection';
+    }
+    public function softDelete($id)
+    {
+        $db = (new DataBase)->getConnection();
+        $sql = "UPDATE Review SET reviewDeleteTime = NOW() WHERE Review_id = :id ";
+        $stmt = $db->prepare($sql);
+        $stmt->bindParam(':id', $id);
+        $check = $stmt->execute();
+        if ($check) {
+            return 'success';
+        }
+        return 'Lost Connection';
+    }
 }

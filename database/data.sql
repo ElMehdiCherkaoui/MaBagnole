@@ -343,3 +343,84 @@ VALUES (
         3,
         3
     );
+
+INSERT INTO
+    Review (
+        reviewRate,
+        reviewComment,
+        reviewDeleteTime,
+        reviewIdUser,
+        reviewIdVehicle
+    )
+VALUES
+    (
+        5,
+        'Excellent car, very clean and comfortable.',
+        NULL,
+        1,
+        1
+    ),
+    (
+        4,
+        'Smooth driving experience, will rent again.',
+        NULL,
+        2,
+        1
+    ),
+    (
+        3,
+        'Good vehicle but fuel consumption was high.',
+        NULL,
+        3,
+        2
+    ),
+    (
+        5,
+        'Luxury and comfort at its best!',
+        NULL,
+        4,
+        3
+    ),
+    (
+        4,
+        'Perfect for family trips.',
+        NULL,
+        5,
+        2
+    ),
+    (
+        2,
+        'Car was okay but delivery was late.',
+        NULL,
+        1,
+        4
+    ),
+    (
+        5,
+        'Amazing performance and handling.',
+        NULL,
+        2,
+        3
+    ),
+    (
+        3,
+        'Decent experience, nothing special.',
+        NULL,
+        3,
+        4
+    ),
+
+(
+    1,
+    'Very bad experience, car was dirty.',
+    '2025-12-20 14:30:00',
+    4,
+    1
+),
+(
+    2,
+    'Vehicle had mechanical issues.',
+    '2025-12-22 09:15:00',
+    5,
+    2
+);

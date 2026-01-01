@@ -1,5 +1,7 @@
 <?php
 require_once __DIR__ . '/../../autoload.php';
+
+$reviews = (new Review())->listReviews();
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -47,46 +49,31 @@ require_once __DIR__ . '/../../autoload.php';
                         <th class="px-6 py-3">Client</th>
                         <th class="px-6 py-3">Rating</th>
                         <th class="px-6 py-3">Comment</th>
+                        <th class="px-6 py-3">Delete Date</th>
                         <th class="px-6 py-3">Actions</th>
                     </tr>
                 </thead>
                 <tbody class="text-gray-100">
+                    <?php foreach ($reviews as $review): ?>
                     <tr class="border-b border-gray-700 hover:bg-gray-700 transition">
-                        <td class="px-6 py-4">1</td>
-                        <td class="px-6 py-4">Tesla Model S</td>
-                        <td class="px-6 py-4">John Doe</td>
-                        <td class="px-6 py-4">5/5</td>
-                        <td class="px-6 py-4">Excellent service and clean vehicle!</td>
+                        <td class="px-6 py-4">
+                            <?= $review->Review_id ?>
+                        </td>
+                        <td class="px-6 py-4"><?= $review->vehicleModel ?></td>
+                        <td class="px-6 py-4"> <?= $review->userName ?></td>
+                        <td class="px-6 py-4"> <?= $review->reviewRate ?></td>
+                        <td class="px-6 py-4"> <?= $review->reviewComment ?></td>
+                        <?php if($review->reviewDeleteTime == NULL): ?>
+                        <td class="px-6 py-4"> <span class="text-green-500">Active</span></td>
+                        <?php else: ?>
+                        <td class="px-6 py-4"> <?= $review->reviewDeleteTime ?></td>
+                        <?php endif ?>
                         <td class="px-6 py-4 flex gap-2">
                             <button
                                 class="px-3 py-1 bg-red-800 hover:bg-red-900 rounded text-white font-semibold">Delete</button>
                         </td>
                     </tr>
-
-                    <tr class="border-b border-gray-700 hover:bg-gray-700 transition">
-                        <td class="px-6 py-4">2</td>
-                        <td class="px-6 py-4">Range Rover</td>
-                        <td class="px-6 py-4">Jane Smith</td>
-                        <td class="px-6 py-4">4/5</td>
-                        <td class="px-6 py-4">Very comfortable and smooth drive.</td>
-                        <td class="px-6 py-4 flex gap-2">
-                            <button
-                                class="px-3 py-1 bg-red-800 hover:bg-red-900 rounded text-white font-semibold">Delete</button>
-                        </td>
-                    </tr>
-
-                    <tr class="border-b border-gray-700 hover:bg-gray-700 transition">
-                        <td class="px-6 py-4">3</td>
-                        <td class="px-6 py-4">Yamaha R1</td>
-                        <td class="px-6 py-4">Mark Lee</td>
-                        <td class="px-6 py-4">3/5</td>
-                        <td class="px-6 py-4">Bike was okay, but could be better maintained.</td>
-                        <td class="px-6 py-4 flex gap-2">
-                            <button
-                                class="px-3 py-1 bg-red-800 hover:bg-red-900 rounded text-white font-semibold">Delete</button>
-                        </td>
-                    </tr>
-
+                    <?php endforeach ?>
                 </tbody>
             </table>
         </div>
