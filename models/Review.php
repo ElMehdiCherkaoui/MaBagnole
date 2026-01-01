@@ -38,4 +38,9 @@ class Review
     {
         return "Review (Review_id: {$this->Review_id}, reviewRating: {$this->reviewRating})";
     }
+    public function listReviews() {
+        
+    }
+    public function editReviews() {}
+    public function softDelete() {}
 }
