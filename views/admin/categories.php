@@ -4,13 +4,27 @@ require_once __DIR__ . '/../../autoload.php';
 $cate = new Category();
 $categories = $cate->listCategory();
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['categoryName'], $_POST['categoryDescription'])) {
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['add_category'])) {
 
 
     $cate->categoryName = $_POST['categoryName'];
     $cate->descriptionCategory = $_POST['categoryDescription'];
 
     $result = $cate->ajouteCategory();
+
+    if ($result === 'success') {
+        header('Location: categories.php');
+        exit;
+    } else {
+        echo $result;
+    }
+}
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['editCategoryId'])) {
+
+
+    $cate->categoryName = $_POST['categoryName'];
+    $cate->descriptionCategory = $_POST['categoryDescription'];
+    $result = $cate->modifyCategory((int)$_POST['category_id']);
 
     if ($result === 'success') {
         header('Location: categories.php');
@@ -90,40 +104,40 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['category_id'])) {
                 </thead>
                 <tbody class="text-gray-100">
                     <?php foreach ($categories as $category): ?>
-                    <tr class="border-b border-gray-700 hover:bg-gray-700 transition">
-                        <td class="px-6 py-4">
-                            <?= $category->Category_id ?>
-                        </td>
+                        <tr class="border-b border-gray-700 hover:bg-gray-700 transition">
+                            <td class="px-6 py-4">
+                                <?= $category->Category_id ?>
+                            </td>
 
-                        <td class="px-6 py-4">
-                            <?= htmlspecialchars($category->categoryName) ?>
-                        </td>
+                            <td class="px-6 py-4">
+                                <?= htmlspecialchars($category->categoryName) ?>
+                            </td>
 
-                        <td class="px-6 py-4">
-                            <?= htmlspecialchars($category->categoryDescription) ?>
-                        </td>
+                            <td class="px-6 py-4">
+                                <?= htmlspecialchars($category->categoryDescription) ?>
+                            </td>
 
-                        <td class="px-6 py-4 flex gap-2">
-                            <button
-                                class="px-3 py-1 bg-red-600 hover:bg-red-700 rounded text-white font-semibold editBtn"
-                                data-id="<?= $category->Category_id ?>"
-                                data-name="<?= htmlspecialchars($category->categoryName) ?>"
-                                data-desc="<?= htmlspecialchars($category->categoryDescription) ?>">
-                                Edit
-                            </button>
-
-
-                            <form method="POST" action="#" ;
-                                onsubmit="return confirm('Are you sure you want to delete this category?')">
-                                <input type="hidden" name="category_id" value="<?= $category->Category_id ?>">
-                                <button type="submit"
-                                    class="px-3 py-1 bg-red-800 hover:bg-red-900 rounded text-white font-semibold">
-                                    Delete
+                            <td class="px-6 py-4 flex gap-2">
+                                <button
+                                    class="px-3 py-1 bg-red-600 hover:bg-red-700 rounded text-white font-semibold editBtn"
+                                    data-id="<?= $category->Category_id ?>"
+                                    data-name="<?= htmlspecialchars($category->categoryName) ?>"
+                                    data-desc="<?= htmlspecialchars($category->categoryDescription) ?>">
+                                    Edit
                                 </button>
-                            </form>
 
-                        </td>
-                    </tr>
+
+                                <form method="POST" action="#" ;
+                                    onsubmit="return confirm('Are you sure you want to delete this category?')">
+                                    <input type="hidden" name="category_id" value="<?= $category->Category_id ?>">
+                                    <button type="submit"
+                                        class="px-3 py-1 bg-red-800 hover:bg-red-900 rounded text-white font-semibold">
+                                        Delete
+                                    </button>
+                                </form>
+
+                            </td>
+                        </tr>
                     <?php endforeach; ?>
                 </tbody>
 
@@ -141,6 +155,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['category_id'])) {
             </div>
 
             <form method="POST" action="categories.php" class="space-y-4">
+                <input type="hidden" name="add_category" value=" 1">
+
                 <div>
                     <label class="block mb-1 text-sm font-semibold">Category Name</label>
                     <input type="text" name="categoryName" required
@@ -214,47 +230,47 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['category_id'])) {
 
 </body>
 <script>
-const openBtn = document.getElementById('openAddModal');
-const modal = document.getElementById('addCategoryModal');
-const closeBtn = document.getElementById('closeAddModal');
-const cancelBtn = document.getElementById('cancelAddModal');
+    const openBtn = document.getElementById('openAddModal');
+    const modal = document.getElementById('addCategoryModal');
+    const closeBtn = document.getElementById('closeAddModal');
+    const cancelBtn = document.getElementById('cancelAddModal');
 
-openBtn.addEventListener('click', () => {
-    modal.classList.remove('hidden');
-});
-
-closeBtn.addEventListener('click', closeModal);
-cancelBtn.addEventListener('click', closeModal);
-
-function closeModal() {
-    modal.classList.add('hidden');
-}
-
-
-const editModal = document.getElementById('editCategoryModal');
-const closeEditModal = document.getElementById('closeEditModal');
-const cancelEditModal = document.getElementById('cancelEditModal');
-
-const editId = document.getElementById('editCategoryId');
-const editName = document.getElementById('editCategoryName');
-const editDesc = document.getElementById('editCategoryDesc');
-
-document.querySelectorAll('.editBtn').forEach(button => {
-    button.addEventListener('click', () => {
-        editId.value = button.dataset.id;
-        editName.value = button.dataset.name;
-        editDesc.value = button.dataset.desc;
-
-        editModal.classList.remove('hidden');
+    openBtn.addEventListener('click', () => {
+        modal.classList.remove('hidden');
     });
-});
 
-closeEditModal.addEventListener('click', closeModal);
-cancelEditModal.addEventListener('click', closeModal);
+    closeBtn.addEventListener('click', closeModal);
+    cancelBtn.addEventListener('click', closeModal);
 
-function closeModal() {
-    editModal.classList.add('hidden');
-}
+    function closeModal() {
+        modal.classList.add('hidden');
+    }
+
+
+    const editModal = document.getElementById('editCategoryModal');
+    const closeEditModal = document.getElementById('closeEditModal');
+    const cancelEditModal = document.getElementById('cancelEditModal');
+
+    const editId = document.getElementById('editCategoryId');
+    const editName = document.getElementById('editCategoryName');
+    const editDesc = document.getElementById('editCategoryDesc');
+
+    document.querySelectorAll('.editBtn').forEach(button => {
+        button.addEventListener('click', () => {
+            editId.value = button.dataset.id;
+            editName.value = button.dataset.name;
+            editDesc.value = button.dataset.desc;
+
+            editModal.classList.remove('hidden');
+        });
+    });
+
+    closeEditModal.addEventListener('click', closeModal);
+    cancelEditModal.addEventListener('click', closeModal);
+
+    function closeModal() {
+        editModal.classList.add('hidden');
+    }
 </script>
 
 </html>

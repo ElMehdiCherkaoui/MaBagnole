@@ -1,5 +1,59 @@
 <?php
 require_once __DIR__ . '/../../autoload.php';
+
+$vehicle = new Vehicle();
+$vehicles = $vehicle->listvehicles();
+$categories = (new Category())->listCategory();
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['add_vehicle'])) {
+
+    $vehicle->vehicleImage = $_POST['vehicleImage'];
+    $vehicle->vehicleModel = $_POST['vehicleModel'];
+    $vehicle->vehicleDescription = $_POST['vehicleDescription'];
+    $vehicle->vehiclePricePerDay = $_POST['vehiclePricePerDay'];
+    $vehicle->vehicleAvailability = $_POST['vehicleAvailability'];
+    $vehicle->vehicleIdCategory = $_POST['vehicleIdCategory'];
+
+    $result = $vehicle->ajoutevehicle();
+    if ($result === 'success') {
+        header('Location: vehicles.php');
+        exit;
+    } else {
+        echo $result;
+    }
+}
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['edit_vehicle'])) {
+
+    $id = (int) $_POST['vehicle_id'];
+
+    $vehicle->vehicleImage = $_POST['vehicleImage'];
+    $vehicle->vehicleModel = $_POST['vehicleModel'];
+    $vehicle->vehicleDescription = $_POST['vehicleDescription'];
+    $vehicle->vehiclePricePerDay = $_POST['vehiclePricePerDay'];
+    $vehicle->vehicleAvailability = $_POST['vehicleAvailability'];
+    $vehicle->vehicleIdCategory = $_POST['vehicleIdCategory'];
+
+    $result = $vehicle->modifyvehicle($id);
+    if ($result === 'success') {
+        header('Location: vehicles.php');
+        exit;
+    } else {
+        echo $result;
+    }
+}
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['Vehicleid'])) {
+
+    $id = (int) $_POST['Vehicleid'];
+
+    $result = $vehicle->suppressionVehicle($id);
+    if ($result === 'success') {
+        header('Location: vehicles.php');
+        exit;
+    } else {
+        echo $result;
+    }
+}
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -37,9 +91,11 @@ require_once __DIR__ . '/../../autoload.php';
         <h1 class="text-4xl font-bold text-red-500 mb-8">Manage Vehicles</h1>
 
         <div class="mb-6">
-            <button class="px-6 py-3 bg-red-600 hover:bg-red-700 text-white font-semibold rounded-lg shadow">
+            <button id="addVehicleBtn"
+                class="px-6 py-3 bg-red-600 hover:bg-red-700 text-white font-semibold rounded-lg shadow">
                 Add New Vehicle
             </button>
+
         </div>
 
         <div class="overflow-x-auto">
@@ -49,58 +105,240 @@ require_once __DIR__ . '/../../autoload.php';
                         <th class="px-6 py-3">ID</th>
                         <th class="px-6 py-3">Model</th>
                         <th class="px-6 py-3">Category</th>
+                        <th class="px-6 py-3">Description</th>
                         <th class="px-6 py-3">Price/Day</th>
                         <th class="px-6 py-3">Availability</th>
+                        <th class="px-6 py-3">image</th>
                         <th class="px-6 py-3">Actions</th>
                     </tr>
                 </thead>
                 <tbody class="text-gray-100">
+                    <?php foreach ($vehicles as $vehi): ?>
+
                     <tr class="border-b border-gray-700 hover:bg-gray-700 transition">
-                        <td class="px-6 py-4">1</td>
-                        <td class="px-6 py-4">Tesla Model S</td>
-                        <td class="px-6 py-4">Car</td>
-                        <td class="px-6 py-4">$120</td>
-                        <td class="px-6 py-4">Available</td>
+                        <td class="px-6 py-4"><?= $vehi->Vehicle_id ?></td>
+                        <td class="px-6 py-4"><?= $vehi->vehicleModel ?></td>
+                        <td class="px-6 py-4"><?= $vehi->categoryName ?></td>
+                        <td class="px-6 py-4"><?= $vehi->vehicleDescription ?></td>
+                        <td class="px-6 py-4"><?= $vehi->vehiclePricePerDay ?>$</td>
+                        <td class="px-6 py-4">
+                            <?= $vehi->vehicleAvailability == 1 ? 'Available' : 'Not Available' ?>
+                        </td>
+                        <td class="px-6 py-4"><img src="<?= $vehi->image ?>" alt=""></td>
+
+
                         <td class="px-6 py-4 flex gap-2">
-                            <button
-                                class="px-3 py-1 bg-red-600 hover:bg-red-700 rounded text-white font-semibold">Edit</button>
-                            <button
-                                class="px-3 py-1 bg-red-800 hover:bg-red-900 rounded text-white font-semibold">Delete</button>
+                            <button onclick="openEditVehicle(
+        <?= $vehi->Vehicle_id ?>,
+        '<?= htmlspecialchars($vehi->vehicleModel) ?>',
+        '<?= htmlspecialchars($vehi->image) ?>',
+        '<?= htmlspecialchars($vehi->vehicleDescription) ?>',
+        <?= $vehi->vehiclePricePerDay ?>,
+        <?= $vehi->vehicleAvailability ?>,
+        <?= $vehi->vehicleIdCategory ?>
+    )" class="px-3 py-1 bg-red-600 hover:bg-red-700 rounded text-white font-semibold editBtn">
+                                Edit
+                            </button>
+
+
+
+                            <form method="POST" action="#" ;
+                                onsubmit="return confirm('Are you sure you want to delete this category?')">
+                                <input type="hidden" name="Vehicleid" value="<?= $vehi->Vehicle_id ?>">
+                                <button type="submit"
+                                    class="px-3 py-1 bg-red-800 hover:bg-red-900 rounded text-white font-semibold">
+                                    Delete
+                                </button>
+                            </form>
+
                         </td>
                     </tr>
 
-                    <tr class="border-b border-gray-700 hover:bg-gray-700 transition">
-                        <td class="px-6 py-4">2</td>
-                        <td class="px-6 py-4">Range Rover</td>
-                        <td class="px-6 py-4">Car</td>
-                        <td class="px-6 py-4">$150</td>
-                        <td class="px-6 py-4">Available</td>
-                        <td class="px-6 py-4 flex gap-2">
-                            <button
-                                class="px-3 py-1 bg-red-600 hover:bg-red-700 rounded text-white font-semibold">Edit</button>
-                            <button
-                                class="px-3 py-1 bg-red-800 hover:bg-red-900 rounded text-white font-semibold">Delete</button>
-                        </td>
-                    </tr>
-
-                    <tr class="border-b border-gray-700 hover:bg-gray-700 transition">
-                        <td class="px-6 py-4">3</td>
-                        <td class="px-6 py-4">Yamaha R1</td>
-                        <td class="px-6 py-4">Motorbike</td>
-                        <td class="px-6 py-4">$80</td>
-                        <td class="px-6 py-4">Unavailable</td>
-                        <td class="px-6 py-4 flex gap-2">
-                            <button
-                                class="px-3 py-1 bg-red-600 hover:bg-red-700 rounded text-white font-semibold">Edit</button>
-                            <button
-                                class="px-3 py-1 bg-red-800 hover:bg-red-900 rounded text-white font-semibold">Delete</button>
-                        </td>
-                    </tr>
-
+                    <?php endforeach; ?>
                 </tbody>
             </table>
         </div>
     </main>
+    <div id="addVehicleModal" class="flex fixed inset-0 bg-black bg-opacity-70 hidden items-center justify-center z-50">
+
+        <div class="bg-gray-900 w-full max-w-lg rounded-xl border border-gray-700 p-6">
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="text-2xl font-bold text-red-500">Add Vehicle</h2>
+                <button id="closeVehicleModal" class="text-gray-400 hover:text-white text-xl">&times;</button>
+            </div>
+
+            <form method="POST" action="#" class="space-y-4">
+                <input type="hidden" name="add_vehicle" value="1">
+
+                <div>
+                    <label class="block mb-1 text-sm font-semibold">Vehicle Model</label>
+                    <input type="text" name="vehicleModel" required
+                        class="w-full px-4 py-2 rounded-lg bg-gray-800 border border-gray-600 text-white focus:outline-none focus:border-red-500">
+                </div>
+
+                <div>
+                    <label class="block mb-1 text-sm font-semibold">Image (filename)</label>
+                    <input type="text" name="vehicleImage" required
+                        class="w-full px-4 py-2 rounded-lg bg-gray-800 border border-gray-600 text-white focus:outline-none focus:border-red-500">
+                </div>
+
+                <div>
+                    <label class="block mb-1 text-sm font-semibold">Description</label>
+                    <textarea name="vehicleDescription" required
+                        class="w-full px-4 py-2 rounded-lg bg-gray-800 border border-gray-600 text-white focus:outline-none focus:border-red-500"></textarea>
+                </div>
+
+                <div>
+                    <label class="block mb-1 text-sm font-semibold">Price per Day ($)</label>
+                    <input type="number" step="0.01" name="vehiclePricePerDay" required
+                        class="w-full px-4 py-2 rounded-lg bg-gray-800 border border-gray-600 text-white focus:outline-none focus:border-red-500">
+                </div>
+
+                <div>
+                    <label class="block mb-1 text-sm font-semibold">Availability</label>
+                    <select name="vehicleAvailability"
+                        class="w-full px-4 py-2 rounded-lg bg-gray-800 border border-gray-600 text-white focus:outline-none focus:border-red-500">
+                        <option value="1">Available</option>
+                        <option value="0">Not Available</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label class="block mb-1 text-sm font-semibold">Category</label>
+                    <select name="vehicleIdCategory" required
+                        class="w-full px-4 py-2 rounded-lg bg-gray-800 border border-gray-600 text-white focus:outline-none focus:border-red-500">
+                        <?php foreach ($categories as $category): ?>
+                        <option value="<?= $category->Category_id ?>">
+                            <?= htmlspecialchars($category->categoryName) ?>
+                        </option>
+                        <?php endforeach; ?>
+                    </select>
+                </div>
+
+                <div class="flex justify-end gap-3 pt-2">
+                    <button type="button" id="cancelVehicleModal"
+                        class="px-4 py-2 bg-gray-700 hover:bg-gray-600 rounded-lg font-semibold">
+                        Cancel
+                    </button>
+
+                    <button type="submit"
+                        class="px-5 py-2 bg-red-600 hover:bg-red-700 rounded-lg font-semibold text-white">
+                        Save
+                    </button>
+                </div>
+
+            </form>
+        </div>
+    </div>
+
+
+    <div id="editVehicleModal"
+        class="flex fixed inset-0 bg-black bg-opacity-70 hidden items-center justify-center z-50">
+
+        <div class="bg-gray-900 w-full max-w-lg rounded-xl border border-gray-700 p-6">
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="text-2xl font-bold text-red-500">Edit Vehicle</h2>
+                <button id="closeEditVehicleModal" class="text-gray-400 hover:text-white text-xl">&times;</button>
+            </div>
+
+            <form method="POST" action="#" class="space-y-4">
+                <input type="hidden" name="edit_vehicle" value="2">
+
+                <input type="hidden" name="vehicle_id" id="editVehicleId">
+
+                <div>
+                    <label class="block mb-1 text-sm font-semibold">Vehicle Model</label>
+                    <input type="text" name="vehicleModel" id="editVehicleModel" required
+                        class="w-full px-4 py-2 rounded-lg bg-gray-800 border border-gray-600 text-white focus:outline-none focus:border-red-500">
+                </div>
+
+                <div>
+                    <label class="block mb-1 text-sm font-semibold">Image (filename)</label>
+                    <input type="text" name="vehicleImage" id="editVehicleImage" required
+                        class="w-full px-4 py-2 rounded-lg bg-gray-800 border border-gray-600 text-white focus:outline-none focus:border-red-500">
+                </div>
+
+                <div>
+                    <label class="block mb-1 text-sm font-semibold">Description</label>
+                    <textarea name="vehicleDescription" id="editVehicleDesc" required
+                        class="w-full px-4 py-2 rounded-lg bg-gray-800 border border-gray-600 text-white focus:outline-none focus:border-red-500"></textarea>
+                </div>
+
+                <div>
+                    <label class="block mb-1 text-sm font-semibold">Price per Day ($)</label>
+                    <input type="number" step="0.01" name="vehiclePricePerDay" id="editVehiclePrice" required
+                        class="w-full px-4 py-2 rounded-lg bg-gray-800 border border-gray-600 text-white focus:outline-none focus:border-red-500">
+                </div>
+
+                <div>
+                    <label class="block mb-1 text-sm font-semibold">Availability</label>
+                    <select name="vehicleAvailability" id="editVehicleAvailability"
+                        class="w-full px-4 py-2 rounded-lg bg-gray-800 border border-gray-600 text-white focus:outline-none focus:border-red-500">
+                        <option value="1">Available</option>
+                        <option value="0">Not Available</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label class="block mb-1 text-sm font-semibold">Category</label>
+                    <select name="vehicleIdCategory" id="editVehicleCategory" required
+                        class="w-full px-4 py-2 rounded-lg bg-gray-800 border border-gray-600 text-white focus:outline-none focus:border-red-500">
+                        <?php foreach ($categories as $category): ?>
+                        <option value="<?= $category->Category_id ?>">
+                            <?= htmlspecialchars($category->categoryName) ?>
+                        </option>
+                        <?php endforeach; ?>
+                    </select>
+                </div>
+
+                <div class="flex justify-end gap-3 pt-2">
+                    <button type="button" id="cancelEditVehicleModal"
+                        class="px-4 py-2 bg-gray-700 hover:bg-gray-600 rounded-lg font-semibold">
+                        Cancel
+                    </button>
+
+                    <button type="submit"
+                        class="px-5 py-2 bg-red-600 hover:bg-red-700 rounded-lg font-semibold text-white">
+                        Update
+                    </button>
+                </div>
+
+            </form>
+        </div>
+    </div>
+
+
+
 </body>
+<script>
+const addVehicleBtn = document.getElementById('addVehicleBtn');
+const addVehicleModal = document.getElementById('addVehicleModal');
+const closeVehicleModal = document.getElementById('closeVehicleModal');
+const cancelVehicleModal = document.getElementById('cancelVehicleModal');
+
+addVehicleBtn.onclick = () => addVehicleModal.classList.remove('hidden');
+closeVehicleModal.onclick = () => addVehicleModal.classList.add('hidden');
+cancelVehicleModal.onclick = () => addVehicleModal.classList.add('hidden');
+
+
+
+
+const editModal = document.getElementById('editVehicleModal');
+
+function openEditVehicle(id, model, image, desc, price, availability, category) {
+    document.getElementById('editVehicleId').value = id;
+    document.getElementById('editVehicleModel').value = model;
+    document.getElementById('editVehicleImage').value = image;
+    document.getElementById('editVehicleDesc').value = desc;
+    document.getElementById('editVehiclePrice').value = price;
+    document.getElementById('editVehicleAvailability').value = availability;
+    document.getElementById('editVehicleCategory').value = category;
+
+    editModal.classList.remove('hidden');
+}
+
+document.getElementById('closeEditVehicleModal').onclick = () => editModal.classList.add('hidden');
+document.getElementById('cancelEditVehicleModal').onclick = () => editModal.classList.add('hidden');
+</script>
 
 </html>

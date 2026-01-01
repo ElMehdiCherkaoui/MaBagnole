@@ -41,4 +41,122 @@ class Vehicle
     {
         return "Vehicle (Vehicle_id: {$this->Vehicle_id}, vehicleModel: {$this->vehicleModel}, Price/Day: {$this->vehiclePricePerDay})";
     }
+    public function listvehicles()
+    {
+        $database = new Database();
+        $db = $database->getConnection();
+
+        $sql = "SELECT * FROM Vehicle LEFT JOIN Category ON Vehicle.vehicleIdCategory = Category.Category_id ";
+        $stmt = $db->prepare($sql);
+        $stmt->execute();
+
+        return $stmt->fetchAll(PDO::FETCH_OBJ);
+    }
+
+    public function ajoutevehicle()
+    {
+        $database = new Database();
+        $db = $database->getConnection();
+
+        $stmt = $db->prepare("
+        INSERT INTO Vehicle 
+        (image, vehicleModel, vehicleDescription, vehiclePricePerDay, vehicleAvailability, vehicleIdCategory)
+        VALUES (:image, :vehicleModel, :vehicleDescription, :vehiclePricePerDay, :vehicleAvailability, :vehicleIdCategory)
+    ");
+
+        $stmt->bindParam(':image', $this->vehicleImage);
+        $stmt->bindParam(':vehicleModel', $this->vehicleModel);
+        $stmt->bindParam(':vehicleDescription', $this->vehicleDescription);
+        $stmt->bindParam(':vehiclePricePerDay', $this->vehiclePricePerDay);
+        $stmt->bindParam(':vehicleAvailability', $this->vehicleAvailability);
+        $stmt->bindParam(':vehicleIdCategory', $this->vehicleIdCategory);
+
+        $check = $stmt->execute();
+
+        if ($check) {
+            return "success";
+        }
+        return "conection problem";
+    }
+
+
+    public function modifyvehicle($Vehicle_id)
+    {
+        $database = new Database();
+        $db = $database->getConnection();
+
+        $stmt = $db->prepare("
+        UPDATE Vehicle SET
+            image = :image,
+            vehicleModel = :vehicleModel,
+            vehicleDescription = :vehicleDescription,
+            vehiclePricePerDay = :vehiclePricePerDay,
+            vehicleAvailability = :vehicleAvailability,
+            vehicleIdCategory = :vehicleIdCategory
+        WHERE Vehicle_id = :Vehicle_id
+    ");
+
+        $stmt->bindParam(':image', $this->vehicleImage);
+        $stmt->bindParam(':vehicleModel', $this->vehicleModel);
+        $stmt->bindParam(':vehicleDescription', $this->vehicleDescription);
+        $stmt->bindParam(':vehiclePricePerDay', $this->vehiclePricePerDay);
+        $stmt->bindParam(':vehicleAvailability', $this->vehicleAvailability);
+        $stmt->bindParam(':vehicleIdCategory', $this->vehicleIdCategory);
+        $stmt->bindParam(':Vehicle_id', $Vehicle_id);
+
+        $check = $stmt->execute();
+        if ($check) {
+            return "success";
+        }
+        return "conection problem";
+    }
+
+    public function suppressionVehicle($Vehicle_id)
+    {
+        $database = new Database();
+        $db = $database->getConnection();
+
+        $stmt = $db->prepare("DELETE FROM Vehicle WHERE Vehicle_id = :Vehicle_id");
+        $stmt->bindParam(':Vehicle_id', $Vehicle_id);
+
+        $check = $stmt->execute();
+        if ($check) {
+            return "success";
+        }
+        return "conection problem";
+    }
+    public function checkAvailability($Vehicle_id)
+    {
+        $database = new Database();
+        $db = $database->getConnection();
+
+        $stmt = $db->prepare("SELECT vehicleAvailability FROM Vehicle WHERE Vehicle_id = :Vehicle_id");
+        $stmt->bindParam(':Vehicle_id', $Vehicle_id);
+        $stmt->execute();
+
+        $result = $stmt->fetch(PDO::FETCH_OBJ);
+        if ($result) {
+            return (bool)$result->vehicleAvailability;
+        } else {
+            null;
+        }
+    }
+
+    public function calculerRentalCost($Vehicle_id, $days)
+    {
+        $database = new Database();
+        $db = $database->getConnection();
+
+        $stmt = $db->prepare("SELECT vehiclePricePerDay FROM Vehicle WHERE Vehicle_id = :Vehicle_id");
+        $stmt->bindParam(':Vehicle_id', $Vehicle_id);
+        $stmt->execute();
+
+        $result = $stmt->fetch(PDO::FETCH_OBJ);
+
+        if ($result) {
+            return $result->vehiclePricePerDay * $days;
+        } else {
+            return null;
+        }
+    }
 }
