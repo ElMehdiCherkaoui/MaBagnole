@@ -55,3 +55,17 @@ create TABLE Review (
 );
 
 SELECT * FROM Users;
+
+UPDATE users set userRole = 'admin' where Users_id = 1;
+
+INSERT INTO Category (categoryName, categoryDescription) VALUES
+('Sedan Cars', 'Comfortable cars suitable for daily use and families'),
+('SUV Cars', 'Sport Utility Vehicles for city and off-road driving'),
+('Hatchback Cars', 'Compact cars ideal for urban environments'),
+('Sports Cars', 'High-performance cars designed for speed and style'),
+('Luxury Cars', 'Premium cars with high-end comfort and features'),
+('Electric Cars', 'Cars powered fully by electric energy'),
+('Hybrid Cars', 'Cars using both fuel and electric power'),
+('Convertible Cars', 'Cars with removable or folding roofs'),
+('Coupe Cars', 'Two-door cars with a sporty design'),
+('Pickup Cars', 'Cars designed for transport and utility purposes');

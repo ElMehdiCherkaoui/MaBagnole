@@ -16,10 +16,11 @@
             <h1 class="text-2xl font-bold text-blue-600">MaBagnole</h1>
 
             <div class="space-x-4">
-                <a href="login.php" class="text-gray-700 hover:text-blue-600 font-medium">
+                <a href="views/login.php" class="text-gray-700 hover:text-blue-600 font-medium">
                     Login
                 </a>
-                <a href="register.php" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition">
+                <a href="views/register.php"
+                    class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition">
                     Register
                 </a>
             </div>

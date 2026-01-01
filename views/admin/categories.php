@@ -1,3 +1,40 @@
+<?php
+require_once __DIR__ . '/../../autoload.php';
+
+$cate = new Category();
+$categories = $cate->listCategory();
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['categoryName'], $_POST['categoryDescription'])) {
+
+
+    $cate->categoryName = $_POST['categoryName'];
+    $cate->descriptionCategory = $_POST['categoryDescription'];
+
+    $result = $cate->ajouteCategory();
+
+    if ($result === 'success') {
+        header('Location: categories.php');
+        exit;
+    } else {
+        echo $result;
+    }
+}
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['category_id'])) {
+    $category = new Category();
+    $id = (int) $_POST['category_id'];
+
+    $result = $category->suppressionCategory($id);
+
+    if ($result === 'success') {
+        header('Location: categories.php');
+        exit;
+    } else {
+        echo $result;
+    }
+}
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -34,9 +71,11 @@
         <h1 class="text-4xl font-bold text-red-500 mb-8">Manage Categories</h1>
 
         <div class="mb-6">
-            <button class="px-6 py-3 bg-red-600 hover:bg-red-700 text-white font-semibold rounded-lg shadow">
+            <button id="openAddModal"
+                class="px-6 py-3 bg-red-600 hover:bg-red-700 text-white font-semibold rounded-lg shadow">
                 Add New Category
             </button>
+
         </div>
 
         <div class="overflow-x-auto">
@@ -50,46 +89,172 @@
                     </tr>
                 </thead>
                 <tbody class="text-gray-100">
+                    <?php foreach ($categories as $category): ?>
                     <tr class="border-b border-gray-700 hover:bg-gray-700 transition">
-                        <td class="px-6 py-4">1</td>
-                        <td class="px-6 py-4">Cars</td>
-                        <td class="px-6 py-4">All types of cars</td>
+                        <td class="px-6 py-4">
+                            <?= $category->Category_id ?>
+                        </td>
+
+                        <td class="px-6 py-4">
+                            <?= htmlspecialchars($category->categoryName) ?>
+                        </td>
+
+                        <td class="px-6 py-4">
+                            <?= htmlspecialchars($category->categoryDescription) ?>
+                        </td>
+
                         <td class="px-6 py-4 flex gap-2">
                             <button
-                                class="px-3 py-1 bg-red-600 hover:bg-red-700 rounded text-white font-semibold">Edit</button>
-                            <button
-                                class="px-3 py-1 bg-red-800 hover:bg-red-900 rounded text-white font-semibold">Delete</button>
+                                class="px-3 py-1 bg-red-600 hover:bg-red-700 rounded text-white font-semibold editBtn"
+                                data-id="<?= $category->Category_id ?>"
+                                data-name="<?= htmlspecialchars($category->categoryName) ?>"
+                                data-desc="<?= htmlspecialchars($category->categoryDescription) ?>">
+                                Edit
+                            </button>
+
+
+                            <form method="POST" action="#" ;
+                                onsubmit="return confirm('Are you sure you want to delete this category?')">
+                                <input type="hidden" name="category_id" value="<?= $category->Category_id ?>">
+                                <button type="submit"
+                                    class="px-3 py-1 bg-red-800 hover:bg-red-900 rounded text-white font-semibold">
+                                    Delete
+                                </button>
+                            </form>
+
                         </td>
                     </tr>
-
-                    <tr class="border-b border-gray-700 hover:bg-gray-700 transition">
-                        <td class="px-6 py-4">2</td>
-                        <td class="px-6 py-4">Motorbikes</td>
-                        <td class="px-6 py-4">All types of motorbikes</td>
-                        <td class="px-6 py-4 flex gap-2">
-                            <button
-                                class="px-3 py-1 bg-red-600 hover:bg-red-700 rounded text-white font-semibold">Edit</button>
-                            <button
-                                class="px-3 py-1 bg-red-800 hover:bg-red-900 rounded text-white font-semibold">Delete</button>
-                        </td>
-                    </tr>
-
-                    <tr class="border-b border-gray-700 hover:bg-gray-700 transition">
-                        <td class="px-6 py-4">3</td>
-                        <td class="px-6 py-4">Bikes</td>
-                        <td class="px-6 py-4">Electric and standard bikes</td>
-                        <td class="px-6 py-4 flex gap-2">
-                            <button
-                                class="px-3 py-1 bg-red-600 hover:bg-red-700 rounded text-white font-semibold">Edit</button>
-                            <button
-                                class="px-3 py-1 bg-red-800 hover:bg-red-900 rounded text-white font-semibold">Delete</button>
-                        </td>
-                    </tr>
-
+                    <?php endforeach; ?>
                 </tbody>
+
             </table>
         </div>
     </main>
+
+    <div id="addCategoryModal"
+        class="flex fixed inset-0 bg-black bg-opacity-70 hidden items-center justify-center z-50">
+
+        <div class="bg-gray-900 w-full max-w-md rounded-xl border border-gray-700 p-6">
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="text-2xl font-bold text-red-500">Add Category</h2>
+                <button id="closeAddModal" class="text-gray-400 hover:text-white text-xl">&times;</button>
+            </div>
+
+            <form method="POST" action="categories.php" class="space-y-4">
+                <div>
+                    <label class="block mb-1 text-sm font-semibold">Category Name</label>
+                    <input type="text" name="categoryName" required
+                        class="w-full px-4 py-2 rounded-lg bg-gray-800 border border-gray-600 text-white focus:outline-none focus:border-red-500">
+                </div>
+
+                <div>
+                    <label class="block mb-1 text-sm font-semibold">Description</label>
+                    <textarea name="categoryDescription" required
+                        class="w-full px-4 py-2 rounded-lg bg-gray-800 border border-gray-600 text-white focus:outline-none focus:border-red-500"></textarea>
+                </div>
+
+                <div class="flex justify-end gap-3">
+                    <button type="button" id="cancelAddModal"
+                        class="px-4 py-2 bg-gray-700 hover:bg-gray-600 rounded-lg font-semibold">
+                        Cancel
+                    </button>
+
+                    <button type="submit"
+                        class="px-5 py-2 bg-red-600 hover:bg-red-700 rounded-lg font-semibold text-white">
+                        Save
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+
+
+    <!-- EDIT CATEGORY MODAL -->
+    <div id="editCategoryModal"
+        class="flex fixed inset-0 bg-black bg-opacity-70 hidden items-center justify-center z-50">
+
+        <div class="bg-gray-900 w-full max-w-md rounded-xl border border-gray-700 p-6">
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="text-2xl font-bold text-red-500">Edit Category</h2>
+                <button id="closeEditModal" class="text-gray-400 hover:text-white text-xl">&times;</button>
+            </div>
+
+            <form method="POST" action="categories.php" class="space-y-4">
+
+                <!-- HIDDEN ID -->
+                <input type="hidden" name="category_id" id="editCategoryId">
+
+                <div>
+                    <label class="block mb-1 text-sm font-semibold">Category Name</label>
+                    <input type="text" name="categoryName" id="editCategoryName" required
+                        class="w-full px-4 py-2 rounded-lg bg-gray-800 border border-gray-600 text-white focus:outline-none focus:border-red-500">
+                </div>
+
+                <div>
+                    <label class="block mb-1 text-sm font-semibold">Description</label>
+                    <textarea name="categoryDescription" id="editCategoryDesc" required
+                        class="w-full px-4 py-2 rounded-lg bg-gray-800 border border-gray-600 text-white focus:outline-none focus:border-red-500"></textarea>
+                </div>
+
+                <div class="flex justify-end gap-3">
+                    <button type="button" id="cancelEditModal"
+                        class="px-4 py-2 bg-gray-700 hover:bg-gray-600 rounded-lg font-semibold">
+                        Cancel
+                    </button>
+
+                    <button type="submit"
+                        class="px-5 py-2 bg-red-600 hover:bg-red-700 rounded-lg font-semibold text-white">
+                        Update
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
 </body>
+<script>
+const openBtn = document.getElementById('openAddModal');
+const modal = document.getElementById('addCategoryModal');
+const closeBtn = document.getElementById('closeAddModal');
+const cancelBtn = document.getElementById('cancelAddModal');
+
+openBtn.addEventListener('click', () => {
+    modal.classList.remove('hidden');
+});
+
+closeBtn.addEventListener('click', closeModal);
+cancelBtn.addEventListener('click', closeModal);
+
+function closeModal() {
+    modal.classList.add('hidden');
+}
+
+
+const editModal = document.getElementById('editCategoryModal');
+const closeEditModal = document.getElementById('closeEditModal');
+const cancelEditModal = document.getElementById('cancelEditModal');
+
+const editId = document.getElementById('editCategoryId');
+const editName = document.getElementById('editCategoryName');
+const editDesc = document.getElementById('editCategoryDesc');
+
+document.querySelectorAll('.editBtn').forEach(button => {
+    button.addEventListener('click', () => {
+        editId.value = button.dataset.id;
+        editName.value = button.dataset.name;
+        editDesc.value = button.dataset.desc;
+
+        editModal.classList.remove('hidden');
+    });
+});
+
+closeEditModal.addEventListener('click', closeModal);
+cancelEditModal.addEventListener('click', closeModal);
+
+function closeModal() {
+    editModal.classList.add('hidden');
+}
+</script>
 
 </html>
