@@ -15,7 +15,8 @@
             <div class="text-white font-medium">Welcome, John Doe</div>
             <a href="dashboard.php"
                 class="bg-white text-indigo-600 px-3 py-1 rounded hover:bg-gray-100 transition">Dashboard</a>
-            <a href="#" class="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600 transition">Logout</a>
+            <a href="../logout.php"
+                class="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600 transition">Logout</a>
         </div>
     </nav>
 

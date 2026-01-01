@@ -1,3 +1,46 @@
+<?php
+
+
+require_once "../config/Database.php";
+require_once "../models/User.php";
+
+$message = null;
+
+if ($_SERVER["REQUEST_METHOD"] === "POST") {
+
+    $name = htmlspecialchars(trim($_POST["name"]));
+    $email = htmlspecialchars(trim($_POST["email"]));
+    $password = htmlspecialchars($_POST["password"]);
+    $confirmPassword = htmlspecialchars($_POST["confirm_password"]);
+
+
+    if ($password !== $confirmPassword) {
+        $message = "Passwords do not match";
+    } elseif (strlen($password) < 8) {
+        $message = "Password must be at least 8 characters";
+    } else {
+
+        $user = new Users(
+            null,
+            $name,
+            $email,
+            "client",
+            1,
+            $password
+        );
+
+        $result = $user->register();
+
+        if ($result === "success") {
+
+            header("Location: login.php");
+            exit;
+        } else {
+            $message = $result;
+        }
+    }
+}
+?>
 <!DOCTYPE html>
 <html lang="en">
 
@@ -19,8 +62,13 @@
                 Join MaBagnole and start renting vehicles easily
             </p>
         </div>
+        <?php if (!empty($message)): ?>
+            <p class="text-red-600 text-sm mb-4">
+                <?= htmlspecialchars($message) ?>
+            </p>
+        <?php endif; ?>
 
-        <form method="POST" action="">
+        <form method="POST">
 
             <div class="mb-4">
                 <label class="block text-sm font-medium mb-1">Full Name</label>

@@ -1,3 +1,4 @@
+-- Active: 1765134969045@@localhost@3306@mabagnole
 CREATE DATABASE MABAGNOLE;
 
 use mabagnole;
@@ -52,3 +53,5 @@ create TABLE Review (
     FOREIGN KEY (reviewIdUser) REFERENCES Users (Users_id),
     FOREIGN KEY (reviewIdVehicle) REFERENCES Vehicle (Vehicle_id)
 );
+
+SELECT * FROM Users;

@@ -40,12 +40,12 @@
             </p>
 
             <div class="flex justify-center gap-6">
-                <a href="login.php"
+                <a href="views/login.php"
                     class="bg-blue-600 text-white px-8 py-3 rounded-lg text-lg font-semibold hover:bg-blue-700 transition">
                     Login
                 </a>
 
-                <a href="register.php"
+                <a href="views/register.php"
                     class="border border-blue-600 text-blue-600 px-8 py-3 rounded-lg text-lg font-semibold hover:bg-blue-50 transition">
                     Create Account
                 </a>

@@ -25,7 +25,7 @@
                 class="block px-4 py-3 rounded-lg text-red-500 font-semibold hover:bg-red-900 hover:text-white transition">Reservations</a>
             <a href="reviews.php"
                 class="block px-4 py-3 rounded-lg text-red-500 font-semibold hover:bg-red-900 hover:text-white transition">Reviews</a>
-            <a href="#"
+            <a href="../logout.php"
                 class="block px-4 py-3 rounded-lg text-gray-400 font-semibold hover:bg-red-900 hover:text-white transition">Logout</a>
         </nav>
     </aside>

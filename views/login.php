@@ -1,3 +1,30 @@
+<?php
+require_once '../config/database.php';
+require_once '../models/User.php';
+session_start();
+
+
+$message = null;
+
+if ($_SERVER["REQUEST_METHOD"] === "POST") {
+    $users = new Users();
+
+    $check = $users->login(htmlspecialchars($_POST['email']), htmlspecialchars($_POST['password']));
+
+    if ($check == "admin") {
+        $_SESSION['userEmailLogin'] = htmlspecialchars($_POST['email']);
+
+        header("Location: admin/dashboard.php");
+    } else if ($check == "client") {
+        $_SESSION['userEmailLogin'] = htmlspecialchars($_POST['email']);
+
+        header("Location: client/dashboard.php");
+    } else {
+        $message = $check;
+    }
+}
+
+?>
 <!DOCTYPE html>
 <html lang="en">
 
@@ -21,6 +48,11 @@
         </div>
 
         <form method="POST" action="">
+            <?php if (!empty($message)): ?>
+                <p class="text-red-600 text-sm mb-4">
+                    <?= htmlspecialchars($message) ?>
+                </p>
+            <?php endif; ?>
 
             <div class="mb-4">
                 <label class="block text-sm font-medium mb-1">Email Address</label>
