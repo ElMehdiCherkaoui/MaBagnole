@@ -1,9 +1,20 @@
-<?php 
+<?php
 require_once __DIR__ . '/../../autoload.php';
 session_start();
 $user = (new User)->listUserLogged($_SESSION['userEmailLogin']);
 
-$vehicles = (new Vehicle)->getAllVehicles();
+$categories = (new Category)->listCategory();
+
+$search = $_POST['search'] ?? '';
+$category = $_POST['category'] ?? 'all';
+
+if (!empty($search)) {
+    $filteredVehicles = (new Vehicle)->getVehiclesByModel($search);
+} elseif ($category !== 'all') {
+    $filteredVehicles = (new Vehicle)->getVehiclesByCategory($category);
+} else {
+    $filteredVehicles = (new Vehicle)->getAllVehicles();
+}
 
 ?>
 <!DOCTYPE html>
@@ -14,6 +25,9 @@ $vehicles = (new Vehicle)->getAllVehicles();
     <title>Vehicles | MaBagnole</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.min.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
 </head>
 
 <body class="bg-gray-50 min-h-screen">
@@ -49,124 +63,62 @@ $vehicles = (new Vehicle)->getAllVehicles();
         </div>
 
 
-        <div class="flex flex-col md:flex-row gap-4 mb-8">
+        <form method="POST" class="flex flex-col md:flex-row gap-4 mb-8">
             <div class="relative w-full md:w-1/2">
                 <i class="fas fa-search absolute left-3 top-3 text-gray-400"></i>
-                <input id="searchInput" type="text" placeholder="Search by model or features..."
+                <input id="searchInput" name="search" type="text" placeholder="Search by model or features..."
+                    value="<?php echo htmlspecialchars($search); ?>"
                     class="w-full pl-10 pr-4 py-2 rounded-lg border focus:outline-none focus:ring-2 focus:ring-blue-500">
             </div>
 
             <div class="relative w-full md:w-1/4">
                 <i class="fas fa-filter absolute left-3 top-3 text-gray-400"></i>
-                <select id="categoryFilter"
+                <select id="categoryFilter" name="category"
                     class="w-full pl-10 pr-4 py-2 rounded-lg border focus:outline-none focus:ring-2 focus:ring-blue-500">
                     <option value="all">All Categories</option>
-                    <option value="car">Car</option>
-                    <option value="motorbike">Motorbike</option>
+                    <?php foreach ($categories as $cat): ?>
+                    <option value="<?php echo htmlspecialchars($cat->categoryName); ?>"
+                        <?php echo $category === $cat->categoryName ? 'selected' : ''; ?>>
+                        <?php echo htmlspecialchars($cat->categoryName); ?></option>
+                    <?php endforeach; ?>
                 </select>
             </div>
-            <button id="filterButton" type="button"
+            <button type="submit"
                 class="bg-blue-600 hover:bg-blue-700 text-white w-full md:w-1/4 px-4 py-2 rounded-lg transition flex items-center justify-center">
                 <i class="fas fa-search mr-2"></i> Filter
             </button>
-        </div>
+        </form>
 
-        <div id="vehicleGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            <?php foreach ($vehicles as $vehicle): ?>
-
-            <div class="vehicle-card bg-white shadow-md rounded-xl overflow-hidden hover:shadow-xl transition transform hover:-translate-y-1"
-                data-name="tesla model s" data-features="electric automatic" data-category="car">
-                <img src="<?= $vehicle->image ?>" alt="<?= $vehicle->image ?>" class="h-48 w-full object-cover">
-                <div class="p-6">
-                    <h2 class="text-xl font-semibold text-gray-800 mb-2"><?= $vehicle->vehicleModel ?></h2>
-                    <p class="text-gray-600 mb-2 flex items-center">
-                        <i class="fas fa-car mr-2 text-blue-500"></i> Car · <?= $vehicle->categoryName ?>
-                    </p>
-
-                    <p class="text-gray-800 font-bold text-lg mb-4"><?= $vehicle->vehiclePricePerDay ?>/day</p>
-                    <a href="vehicle_details.php?id=<?= $vehicle->Vehicle_id ?>"
-                        class="inline-block w-full text-center px-4 py-2 rounded-lg bg-red-500 hover:bg-red-600 text-white font-medium transition">
-                        <i class="fas fa-eye mr-2"></i> View Details
-                    </a>
-                </div>
-            </div>
-            <?php endforeach ?>
-            <div class="vehicle-card bg-white shadow-md rounded-xl overflow-hidden hover:shadow-xl transition transform hover:-translate-y-1"
-                data-name="yamaha r1" data-features="sport bike" data-category="motorbike">
-                <img src="https://images.unsplash.com/photo-1605559424843-9e4c228bf1c8" alt="Yamaha R1"
-                    class="h-48 w-full object-cover">
-                <div class="p-6">
-                    <h2 class="text-xl font-semibold text-gray-800 mb-2">Yamaha R1</h2>
-                    <p class="text-gray-600 mb-2 flex items-center">
-                        <i class="fas fa-motorcycle mr-2 text-yellow-500"></i> Motorbike · Sport
-                    </p>
-                    <div class="flex items-center mb-2">
-                        <i class="fas fa-star text-yellow-400 mr-1"></i>
-                        <i class="fas fa-star text-yellow-400 mr-1"></i>
-                        <i class="fas fa-star text-yellow-400 mr-1"></i>
-                        <i class="fas fa-star text-yellow-400 mr-1"></i>
-                        <i class="fas fa-star text-yellow-400 mr-1"></i>
-                        <span class="text-sm text-gray-500">(5.0)</span>
-                    </div>
-                    <p class="text-gray-800 font-bold text-lg mb-4">$80/day</p>
-                    <a href="vehicle_details.php"
-                        class="inline-block w-full text-center px-4 py-2 rounded-lg bg-yellow-500 hover:bg-yellow-600 text-white font-medium transition">
-                        <i class="fas fa-eye mr-2"></i> View Details
-                    </a>
-                </div>
-            </div>
-
-            <div class="vehicle-card bg-white shadow-md rounded-xl overflow-hidden hover:shadow-xl transition transform hover:-translate-y-1"
-                data-name="range rover" data-features="suv luxury" data-category="car">
-                <img src="https://images.unsplash.com/photo-1617814072231-8c8db9d70f9c" alt="Range Rover"
-                    class="h-48 w-full object-cover">
-                <div class="p-6">
-                    <h2 class="text-xl font-semibold text-gray-800 mb-2">Range Rover</h2>
-                    <p class="text-gray-600 mb-2 flex items-center">
-                        <i class="fas fa-car mr-2 text-green-500"></i> Car · SUV
-                    </p>
-                    <div class="flex items-center mb-2">
-                        <i class="fas fa-star text-yellow-400 mr-1"></i>
-                        <i class="fas fa-star text-yellow-400 mr-1"></i>
-                        <i class="fas fa-star text-yellow-400 mr-1"></i>
-                        <i class="fas fa-star text-yellow-400 mr-1"></i>
-                        <i class="fas fa-star-half-alt text-yellow-400 mr-1"></i>
-                        <span class="text-sm text-gray-500">(4.7)</span>
-                    </div>
-                    <p class="text-gray-800 font-bold text-lg mb-4">$150/day</p>
-                    <a href="vehicle_details.php"
-                        class="inline-block w-full text-center px-4 py-2 rounded-lg bg-green-500 hover:bg-green-600 text-white font-medium transition">
-                        <i class="fas fa-eye mr-2"></i> View Details
-                    </a>
-                </div>
-            </div>
-
-            <div class="vehicle-card bg-white shadow-md rounded-xl overflow-hidden hover:shadow-xl transition transform hover:-translate-y-1"
-                data-name="bmw x5" data-features="suv automatic" data-category="car">
-                <img src="https://images.unsplash.com/photo-1590362891991-f776e747a588" alt="BMW X5"
-                    class="h-48 w-full object-cover">
-                <div class="p-6">
-                    <h2 class="text-xl font-semibold text-gray-800 mb-2">BMW X5</h2>
-                    <p class="text-gray-600 mb-2 flex items-center">
-                        <i class="fas fa-car mr-2 text-red-500"></i> Car · SUV
-                    </p>
-                    <div class="flex items-center mb-2">
-                        <i class="fas fa-star text-yellow-400 mr-1"></i>
-                        <i class="fas fa-star text-yellow-400 mr-1"></i>
-                        <i class="fas fa-star text-yellow-400 mr-1"></i>
-                        <i class="fas fa-star text-yellow-400 mr-1"></i>
-                        <i class="fas fa-star text-yellow-400 mr-1"></i>
-                        <span class="text-sm text-gray-500">(4.8)</span>
-                    </div>
-                    <p class="text-gray-800 font-bold text-lg mb-4">$130/day</p>
-                    <a href="vehicle_details.php"
-                        class="inline-block w-full text-center px-4 py-2 rounded-lg bg-red-500 hover:bg-red-600 text-white font-medium transition">
-                        <i class="fas fa-eye mr-2"></i> View Details
-                    </a>
-                </div>
-            </div>
-
-        </div>
+        <table id="vehiclesTable" class="display w-full text-sm text-left text-gray-500">
+            <thead class="text-xs text-gray-700 uppercase bg-gray-50">
+                <tr>
+                    <th class="px-6 py-3">Image</th>
+                    <th class="px-6 py-3">Model</th>
+                    <th class="px-6 py-3">Category</th>
+                    <th class="px-6 py-3">Price/Day</th>
+                    <th class="px-6 py-3">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                <?php foreach ($filteredVehicles as $vehicle): ?>
+                <tr class="bg-white border-b hover:bg-gray-50">
+                    <td class="px-6 py-4">
+                        <img src="<?php echo htmlspecialchars($vehicle->image); ?>"
+                            alt="<?php echo htmlspecialchars($vehicle->vehicleModel); ?>"
+                            class="h-16 w-24 object-cover rounded">
+                    </td>
+                    <td class="px-6 py-4 font-medium text-gray-900">
+                        <?php echo htmlspecialchars($vehicle->vehicleModel); ?></td>
+                    <td class="px-6 py-4"><?php echo htmlspecialchars($vehicle->categoryName); ?></td>
+                    <td class="px-6 py-4"><?php echo htmlspecialchars($vehicle->vehiclePricePerDay); ?> MAD/day</td>
+                    <td class="px-6 py-4">
+                        <a href="vehicle_details.php?id=<?php echo htmlspecialchars($vehicle->Vehicle_id); ?>"
+                            class="text-blue-600 hover:text-blue-800">View Details</a>
+                    </td>
+                </tr>
+                <?php endforeach; ?>
+            </tbody>
+        </table>
     </div>
 
     <footer class="bg-white border-t shadow-inner mt-16">
@@ -174,6 +126,23 @@ $vehicles = (new Vehicle)->getAllVehicles();
             <i class="fas fa-copyright mr-2"></i> 2025 MaBagnole — All rights reserved.
         </div>
     </footer>
+
+    <script>
+    $(document).ready(function() {
+        $('#vehiclesTable').DataTable({
+            "pageLength": 10,
+            "lengthChange": false,
+            "searching": false,
+            "info": false,
+            "language": {
+                "paginate": {
+                    "next": "Next",
+                    "previous": "Previous"
+                }
+            }
+        });
+    });
+    </script>
 
 </body>
 

@@ -184,4 +184,36 @@ class Vehicle
         $result = $stmt->fetch(\PDO::FETCH_OBJ);
         return $result->TotalVehicles;
     }
+
+    public function getVehiclesByModel($model)
+    {
+        $database = new Database();
+        $db = $database->getConnection();
+
+        $sql = "SELECT *
+                FROM Vehicle v
+                LEFT JOIN Category c ON v.vehicleIdCategory = c.Category_id
+                WHERE v.vehicleModel = :model";
+
+        $stmt = $db->prepare($sql);
+        $stmt->bindParam(':model', $model);
+        $stmt->execute();
+        return $stmt->fetchAll(PDO::FETCH_OBJ);
+    }
+
+    public function getVehiclesByCategory($categoryName)
+    {
+        $database = new Database();
+        $db = $database->getConnection();
+
+        $sql = "SELECT *
+                FROM Vehicle v
+                LEFT JOIN Category c ON v.vehicleIdCategory = c.Category_id
+                WHERE c.categoryName = :categoryName";
+
+        $stmt = $db->prepare($sql);
+        $stmt->bindParam(':categoryName', $categoryName);
+        $stmt->execute();
+        return $stmt->fetchAll(PDO::FETCH_OBJ);
+    }
 }
