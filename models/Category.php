@@ -33,7 +33,7 @@ class Category
     {
         $database = new Database();
         $db = $database->getConnection();
-        $sql = "select * from Category";
+        $sql = "SELECT * FROM Category";
         $stmt = $db->prepare($sql);
         $stmt->execute();
         return $stmt->fetchAll(PDO::FETCH_OBJ);
@@ -84,5 +84,17 @@ class Category
         } else {
             return "problem Conection";
         }
+    }
+    public function countCategory()
+    {
+        $database = new Database();
+        $db = $database->getConnection();
+
+        $sql = "SELECT COUNT(*) AS TotalCategory FROM Category";
+        $stmt = $db->prepare($sql);
+        $stmt->execute();
+
+        $result = $stmt->fetch(PDO::FETCH_OBJ);
+        return $result->TotalCategory;
     }
 }

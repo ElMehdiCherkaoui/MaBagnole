@@ -1,5 +1,9 @@
 <?php
 require_once __DIR__ . '/../../autoload.php';
+$totalVehicles = (new Vehicle)->countVehicles();
+$totalReservations = (new Reservation)->countVehicles();
+$totalReviews = (new Review())->countReviews();
+$totalCategorys = (new Category())->countCategory();
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -50,22 +54,24 @@ require_once __DIR__ . '/../../autoload.php';
             <div
                 class="bg-gray-800 p-6 rounded-2xl border-l-4 border-orange-500 shadow hover:scale-105 transform transition">
                 <h2 class="text-xl font-semibold mb-2 text-orange-400">Vehicles</h2>
-                <p class="text-4xl font-bold text-gray-100 text-center">24</p>
+                <p class="text-4xl font-bold text-gray-100 text-center">
+                    <?= $totalVehicles ?>
+                </p>
             </div>
             <div
                 class="bg-gray-800 p-6 rounded-2xl border-l-4 border-orange-500 shadow hover:scale-105 transform transition">
                 <h2 class="text-xl font-semibold mb-2 text-orange-400">Reservations</h2>
-                <p class="text-4xl font-bold text-gray-100 text-center">56</p>
+                <p class="text-4xl font-bold text-gray-100 text-center"><?= $totalReservations ?></p>
             </div>
             <div
                 class="bg-gray-800 p-6 rounded-2xl border-l-4 border-orange-500 shadow hover:scale-105 transform transition">
                 <h2 class="text-xl font-semibold mb-2 text-orange-400">Reviews</h2>
-                <p class="text-4xl font-bold text-gray-100 text-center">18</p>
+                <p class="text-4xl font-bold text-gray-100 text-center"><?= $totalReviews ?></p>
             </div>
             <div
                 class="bg-gray-800 p-6 rounded-2xl border-l-4 border-orange-500 shadow hover:scale-105 transform transition">
                 <h2 class="text-xl font-semibold mb-2 text-orange-400">Categories</h2>
-                <p class="text-4xl font-bold text-gray-100 text-center">6</p>
+                <p class="text-4xl font-bold text-gray-100 text-center"><?= $totalCategorys ?></p>
             </div>
         </div>
 

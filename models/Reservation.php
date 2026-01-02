@@ -121,4 +121,16 @@ class Reservation
         }
         return "conection problem";
     }
+            public function countVehicles()
+    {
+        $database = new Database();
+        $db = $database->getConnection();
+
+        $sql = "SELECT COUNT(*) AS TotalReservations FROM Reservation";
+        $stmt = $db->prepare($sql);
+        $stmt->execute();
+
+        $result = $stmt->fetch(PDO::FETCH_OBJ);
+        return $result->TotalReservations;
+    }
 }
