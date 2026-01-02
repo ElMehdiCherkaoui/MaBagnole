@@ -1,5 +1,5 @@
 <?php
-class Administrator extends Users
+class Administrator extends User
 {
     public function __construct(
         $user_id = null,
@@ -20,6 +20,8 @@ class Administrator extends Users
             $userCreateDate
         );
     }
+
+    
 
     public function __toString()
     {

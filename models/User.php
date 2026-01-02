@@ -1,5 +1,5 @@
 <?php
-class Users
+class User
 {
     private $user_id;
     private $userName;
@@ -132,10 +132,20 @@ class Users
         return "success";
     }
 
-    function logout()
+    public function logout()
     {
         session_start();
         session_unset();
         session_destroy();
+    }
+
+    public function listUserLogged($userEmail)
+    {
+        $db = (new Database)->getConnection();
+        $sql = "SELECT * FROM users WHERE userEmail = :email";
+        $stmt = $db->prepare($sql);
+        $stmt->bindParam(":email", $userEmail);
+        $stmt->execute();
+        return $stmt->fetchObject();
     }
 }

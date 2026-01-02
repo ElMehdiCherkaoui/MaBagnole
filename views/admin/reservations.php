@@ -25,34 +25,52 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <head>
     <meta charset="UTF-8">
     <title>Manage Reservations | MaBagnole Admin</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 
 <body class="bg-gray-900 text-gray-100 min-h-screen font-sans flex">
 
     <aside class="bg-gray-950 w-64 min-h-screen flex flex-col fixed border-r border-gray-800">
         <div class="p-6 flex items-center justify-center border-b border-gray-800">
-            <span class="text-2xl font-bold text-red-500">MaBagnole Admin</span>
+            <span class="text-2xl font-bold text-red-500 flex items-center">
+                <i class="fas fa-car mr-2"></i> MaBagnole Admin
+            </span>
         </div>
 
         <nav class="flex-1 px-4 py-6 space-y-2">
             <a href="dashboard.php"
-                class="block px-4 py-3 rounded-lg text-red-500 font-semibold hover:bg-red-900 hover:text-white transition">Dashboard</a>
+                class="block px-4 py-3 rounded-lg text-red-500 font-semibold hover:bg-red-900 hover:text-white transition flex items-center">
+                <i class="fas fa-tachometer-alt mr-2"></i> Dashboard
+            </a>
             <a href="vehicles.php"
-                class="block px-4 py-3 rounded-lg text-red-500 font-semibold hover:bg-red-900 hover:text-white transition">Vehicles</a>
+                class="block px-4 py-3 rounded-lg text-red-500 font-semibold hover:bg-red-900 hover:text-white transition flex items-center">
+                <i class="fas fa-car mr-2"></i> Vehicles
+            </a>
             <a href="categories.php"
-                class="block px-4 py-3 rounded-lg text-red-500 font-semibold hover:bg-red-900 hover:text-white transition">Categories</a>
+                class="block px-4 py-3 rounded-lg text-red-500 font-semibold hover:bg-red-900 hover:text-white transition flex items-center">
+                <i class="fas fa-tags mr-2"></i> Categories
+            </a>
             <a href="reservations.php"
-                class="block px-4 py-3 rounded-lg text-white bg-red-700 font-semibold transition">Reservations</a>
+                class="block px-4 py-3 rounded-lg text-white bg-red-700 font-semibold transition flex items-center">
+                <i class="fas fa-calendar-check mr-2"></i> Reservations
+            </a>
             <a href="reviews.php"
-                class="block px-4 py-3 rounded-lg text-red-500 font-semibold hover:bg-red-900 hover:text-white transition">Reviews</a>
+                class="block px-4 py-3 rounded-lg text-red-500 font-semibold hover:bg-red-900 hover:text-white transition flex items-center">
+                <i class="fas fa-star mr-2"></i> Reviews
+            </a>
             <a href="../logout.php"
-                class="block px-4 py-3 rounded-lg text-gray-400 font-semibold hover:bg-red-900 hover:text-white transition">Logout</a>
+                class="block px-4 py-3 rounded-lg text-gray-400 font-semibold hover:bg-red-900 hover:text-white transition flex items-center">
+                <i class="fas fa-sign-out-alt mr-2"></i> Logout
+            </a>
         </nav>
     </aside>
 
     <main class="flex-1 ml-64 p-8">
-        <h1 class="text-4xl font-bold text-red-500 mb-8">Manage Reservations</h1>
+        <h1 class="text-4xl font-bold text-red-500 mb-8 flex items-center">
+            <i class="fas fa-calendar-check mr-3"></i> Manage Reservations
+        </h1>
 
         <div class="overflow-x-auto">
             <table class="min-w-full bg-gray-800 rounded-xl border border-gray-700">
@@ -154,6 +172,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             </table>
         </div>
     </main>
+
+
+
 </body>
 
 </html>

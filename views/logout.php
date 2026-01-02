@@ -1,4 +1,4 @@
 <?php
 require_once "../models/User.php";
-(new Users())->logout();
+(new User())->logout();
 header("location: ../index.php");

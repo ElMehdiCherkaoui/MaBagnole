@@ -1,5 +1,7 @@
 <?php
-class Client extends Users
+
+
+class Client extends User
 {
     public function __construct(
         $user_id = null,

@@ -56,7 +56,7 @@ class Reservation
         $stmt = $db->prepare($sql);
         $stmt->execute();
 
-        return $stmt->fetchAll(PDO::FETCH_OBJ);
+        return $stmt->fetchAll(\PDO::FETCH_OBJ);
     }
     public function ajouteReservation()
     {
@@ -121,7 +121,7 @@ class Reservation
         }
         return "conection problem";
     }
-            public function countVehicles()
+    public function countTotalReservation()
     {
         $database = new Database();
         $db = $database->getConnection();

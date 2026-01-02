@@ -41,7 +41,7 @@ class Vehicle
     {
         return "Vehicle (Vehicle_id: {$this->Vehicle_id}, vehicleModel: {$this->vehicleModel}, Price/Day: {$this->vehiclePricePerDay})";
     }
-    public function listvehicles()
+    public function getAllVehicles()
     {
         $database = new Database();
         $db = $database->getConnection();
@@ -50,10 +50,10 @@ class Vehicle
         $stmt = $db->prepare($sql);
         $stmt->execute();
 
-        return $stmt->fetchAll(PDO::FETCH_OBJ);
+        return $stmt->fetchAll(\PDO::FETCH_OBJ);
     }
 
-    public function ajoutevehicle()
+    public function addVehicle()
     {
         $database = new Database();
         $db = $database->getConnection();
@@ -76,11 +76,11 @@ class Vehicle
         if ($check) {
             return "success";
         }
-        return "conection problem";
+        return "connection problem";
     }
 
 
-    public function modifyvehicle($Vehicle_id)
+    public function updateVehicle($Vehicle_id)
     {
         $database = new Database();
         $db = $database->getConnection();
@@ -108,10 +108,10 @@ class Vehicle
         if ($check) {
             return "success";
         }
-        return "conection problem";
+        return "connection problem";
     }
 
-    public function suppressionVehicle($Vehicle_id)
+    public function deleteVehicle($Vehicle_id)
     {
         $database = new Database();
         $db = $database->getConnection();
@@ -123,9 +123,9 @@ class Vehicle
         if ($check) {
             return "success";
         }
-        return "conection problem";
+        return "connection problem";
     }
-    public function checkAvailability($Vehicle_id)
+    public function isAvailable($Vehicle_id)
     {
         $database = new Database();
         $db = $database->getConnection();
@@ -134,15 +134,15 @@ class Vehicle
         $stmt->bindParam(':Vehicle_id', $Vehicle_id);
         $stmt->execute();
 
-        $result = $stmt->fetch(PDO::FETCH_OBJ);
+        $result = $stmt->fetch(\PDO::FETCH_OBJ);
         if ($result) {
             return (bool)$result->vehicleAvailability;
         } else {
-            null;
+            return null;
         }
     }
 
-    public function calculerRentalCost($Vehicle_id, $days)
+    public function calculateRentalCost($Vehicle_id, $days)
     {
         $database = new Database();
         $db = $database->getConnection();
@@ -151,7 +151,7 @@ class Vehicle
         $stmt->bindParam(':Vehicle_id', $Vehicle_id);
         $stmt->execute();
 
-        $result = $stmt->fetch(PDO::FETCH_OBJ);
+        $result = $stmt->fetch(\PDO::FETCH_OBJ);
 
         if ($result) {
             return $result->vehiclePricePerDay * $days;
@@ -159,7 +159,7 @@ class Vehicle
             return null;
         }
     }
-        public function countVehicles()
+        public function getTotalCount()
     {
         $database = new Database();
         $db = $database->getConnection();
@@ -168,7 +168,7 @@ class Vehicle
         $stmt = $db->prepare($sql);
         $stmt->execute();
 
-        $result = $stmt->fetch(PDO::FETCH_OBJ);
+        $result = $stmt->fetch(\PDO::FETCH_OBJ);
         return $result->TotalVehicles;
     }
 }
