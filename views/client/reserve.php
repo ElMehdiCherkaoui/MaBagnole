@@ -1,9 +1,93 @@
-<?php 
+<?php
+
 require_once __DIR__ . '/../../autoload.php';
 session_start();
+
+$errors = [];
+
+if (!isset($_SESSION['userEmailLogin'])) {
+    header("Location: login.php");
+    exit;
+}
+
 $user = (new User)->listUserLogged($_SESSION['userEmailLogin']);
 
+if (!$user || !isset($user->Users_id)) {
+    header("Location: login.php");
+    exit;
+}
+
+$vehicles = new Vehicle();
+$listVehicles = $vehicles->getAllVehicles();
+
+if (isset($_GET['id'])) {
+    $vehicle = $vehicles->getVehicle((int) $_GET['id']);
+}
+
+if ($_SERVER["REQUEST_METHOD"] === "POST") {
+
+    if (!preg_match('/^[a-zA-Z\s]{3,50}$/', $_POST['pickup_location'])) {
+        $errors[] = "Pickup location must contain only letters and spaces.";
+    }
+
+    if (!preg_match('/^\d{4}-\d{2}-\d{2}$/', $_POST['pickup_date'])) {
+        $errors[] = "Pickup date format is invalid.";
+    }
+
+    if (!preg_match('/^\d{4}-\d{2}-\d{2}$/', $_POST['dropoff_date'])) {
+        $errors[] = "Drop-off date format is invalid.";
+    }
+
+    if (!preg_match('/^[0-9]+$/', $_POST['vehicle_options'])) {
+        $errors[] = "Please select a valid vehicle.";
+    }
+
+    if (empty($errors)) {
+        $pickup = strtotime($_POST['pickup_date']);
+        $dropoff = strtotime($_POST['dropoff_date']);
+
+        if ($dropoff <= $pickup) {
+            $errors[] = "Drop-off date must be after pickup date.";
+        }
+    }
+
+    if (empty($errors)) {
+
+        $vehicleId = (int) $_POST['vehicle_options'];
+        $vehicleData = $vehicles->getVehicle($vehicleId);
+
+        if (!$vehicleData) {
+            $errors[] = "Selected vehicle does not exist.";
+        } else {
+            $price = $vehicleData->vehiclePricePerDay;
+            $days = ($dropoff - $pickup) / (60 * 60 * 24);
+            $totalamount = $days * $price;
+
+            $reservation = new Reservation(
+                null,
+                $_POST['pickup_date'],
+                $_POST['dropoff_date'],
+                $_POST['pickup_location'],
+                'pending',
+                $totalamount,
+                (int) $user->Users_id,
+                (int) $vehicleId
+            );
+
+            $result = $reservation->ajouteReservation();
+
+            if ($result === "success") {
+                header("Location: my_reservations.php");
+                exit;
+            } else {
+                $errors[] = $result;
+            }
+        }
+    }
+}
+
 ?>
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -22,7 +106,6 @@ $user = (new User)->listUserLogged($_SESSION['userEmailLogin']);
                 <i class="fas fa-car mr-2"></i> MaBagnole
             </h1>
 
-            <!-- Desktop Menu -->
             <div class="hidden md:flex space-x-4 items-center">
                 <div class="text-gray-700 font-medium">Welcome, <?= $user->userName;  ?></div>
                 <a href="dashboard.php"
@@ -30,37 +113,9 @@ $user = (new User)->listUserLogged($_SESSION['userEmailLogin']);
                 <a href="../logout.php"
                     class="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600 transition">Logout</a>
             </div>
-
-            <!-- Mobile Menu Button -->
-            <div class="md:hidden">
-                <button id="mobile-menu-button" class="text-gray-700 hover:text-blue-600 focus:outline-none">
-                    <i class="fas fa-bars text-xl"></i>
-                </button>
-            </div>
         </div>
 
-        <!-- Mobile Menu -->
-        <div id="mobile-menu" class="md:hidden hidden bg-white border-t">
-            <div class="px-6 py-4 space-y-2">
-                <div class="text-gray-700 font-medium">Welcome,  <?= $user->userName;  ?></div>
-                <a href="dashboard.php"
-                    class="block bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700 transition">Dashboard</a>
-                <a href="../logout.php"
-                    class="block bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600 transition">Logout</a>
-            </div>
-        </div>
     </nav>
-
-    <script>
-    const mobileMenuButton = document.getElementById('mobile-menu-button');
-    const mobileMenu = document.getElementById('mobile-menu');
-
-    if (mobileMenuButton && mobileMenu) {
-        mobileMenuButton.addEventListener('click', () => {
-            mobileMenu.classList.toggle('hidden');
-        });
-    }
-    </script>
 
     <main class="max-w-4xl mx-auto mt-10 px-4">
         <div class="mb-6 flex items-center justify-between">
@@ -72,7 +127,17 @@ $user = (new User)->listUserLogged($_SESSION['userEmailLogin']);
         </div>
 
         <div class="bg-white shadow-lg rounded-2xl p-8 border-l-4 border-blue-500 hover:shadow-xl transition">
-            <form action="#" method="POST" class="space-y-6">
+            <form method="POST" class="space-y-6">
+                <?php if (!empty($errors)): ?>
+                <div class="mb-6 p-4 rounded-lg bg-red-100 border border-red-400 text-red-700">
+                    <ul class="list-disc pl-5">
+                        <?php foreach ($errors as $error): ?>
+                        <li><?= htmlspecialchars($error) ?></li>
+                        <?php endforeach; ?>
+                    </ul>
+                </div>
+                <?php endif; ?>
+
 
                 <div>
                     <label for="pickup_location" class="block font-semibold mb-2 text-gray-700 flex items-center">
@@ -105,9 +170,19 @@ $user = (new User)->listUserLogged($_SESSION['userEmailLogin']);
                     </label>
                     <select id="vehicle_options" name="vehicle_options"
                         class="w-full pl-4 pr-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:outline-none focus:border-transparent">
-                        <option value="standard">Standard Tesla Model S</option>
-                        <option value="premium">Premium Tesla Model S</option>
-                        <option value="performance">Performance Tesla Model S</option>
+                        <option value="">--- Select Model Car ---</option>
+                        <?php foreach ($listVehicles as $listvehicle): ?>
+                        <?php if ($listvehicle->vehicleModel == $vehicle->vehicleModel): ?>
+                        <option value="<?= $listvehicle->Vehicle_id ?>" selected>
+                            <?= $listvehicle->vehicleModel ?>
+                        </option>
+                        <?php else: ?>
+                        <option value="<?= $listvehicle->Vehicle_id ?>">
+                            <?= $listvehicle->vehicleModel ?>
+                        </option>
+                        <?php endif ?>
+
+                        <?php endforeach ?>
                     </select>
                 </div>
 

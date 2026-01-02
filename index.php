@@ -18,7 +18,6 @@
                 <i class="fas fa-car mr-2"></i> MaBagnole
             </h1>
 
-            <!-- Desktop Menu -->
             <div class="hidden md:flex space-x-4">
                 <a href="views/login.php" class="text-gray-700 hover:text-blue-600 font-medium flex items-center">
                     <i class="fas fa-sign-in-alt mr-1"></i> Login
@@ -29,36 +28,12 @@
                 </a>
             </div>
 
-            <!-- Mobile Menu Button -->
-            <div class="md:hidden">
-                <button id="mobile-menu-button" class="text-gray-700 hover:text-blue-600 focus:outline-none">
-                    <i class="fas fa-bars text-xl"></i>
-                </button>
-            </div>
+
         </div>
 
-        <!-- Mobile Menu -->
-        <div id="mobile-menu" class="md:hidden hidden bg-white border-t">
-            <div class="px-6 py-4 space-y-2">
-                <a href="views/login.php" class="block text-gray-700 hover:text-blue-600 font-medium flex items-center">
-                    <i class="fas fa-sign-in-alt mr-2"></i> Login
-                </a>
-                <a href="views/register.php"
-                    class="block bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition flex items-center">
-                    <i class="fas fa-user-plus mr-2"></i> Register
-                </a>
-            </div>
-        </div>
     </nav>
 
-    <script>
-    const mobileMenuButton = document.getElementById('mobile-menu-button');
-    const mobileMenu = document.getElementById('mobile-menu');
 
-    mobileMenuButton.addEventListener('click', () => {
-        mobileMenu.classList.toggle('hidden');
-    });
-    </script>
 
     <section class="min-h-screen flex items-center justify-center bg-gradient-to-r from-blue-50 to-gray-100">
         <div class="max-w-4xl text-center px-6">

@@ -15,7 +15,7 @@ class Reservation
         $reservationStartDate = null,
         $reservationEndDate = null,
         $reservationPickupLocation = null,
-        $reservationStatus = null,
+        $reservationStatus = 'pending',
         $reservationTotalAmount = null,
         $reservationIdUser = null,
         $reservationIdVehicle = null
@@ -132,5 +132,17 @@ class Reservation
 
         $result = $stmt->fetch(PDO::FETCH_OBJ);
         return $result->TotalReservations;
+    }
+    public function getReservationsByUser($userId)
+    {
+        $database = new Database();
+        $db = $database->getConnection();
+
+        $sql = "SELECT r.*, v.vehicleModel, v.image FROM Reservation r JOIN Vehicle v ON r.reservationIdVehicle = v.Vehicle_id WHERE r.reservationIdUser = :userId ORDER BY r.reservationStartDate DESC";
+        $stmt = $db->prepare($sql);
+        $stmt->bindParam(':userId', $userId);
+        $stmt->execute();
+
+        return $stmt->fetchAll(PDO::FETCH_OBJ);
     }
 }

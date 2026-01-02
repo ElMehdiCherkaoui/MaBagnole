@@ -53,6 +53,19 @@ class Vehicle
         return $stmt->fetchAll(\PDO::FETCH_OBJ);
     }
 
+    public function getVehicle($id)
+    {
+        $database = new Database();
+        $db = $database->getConnection();
+
+        $sql = "SELECT * FROM Vehicle LEFT JOIN Category ON Vehicle.vehicleIdCategory = Category.Category_id WHERE Vehicle_id = :id";
+        $stmt = $db->prepare($sql);
+        $stmt->bindParam(':id', $id);
+        $stmt->execute();
+
+        return $stmt->fetchObject();
+    }
+
     public function addVehicle()
     {
         $database = new Database();
@@ -159,7 +172,7 @@ class Vehicle
             return null;
         }
     }
-        public function getTotalCount()
+    public function getTotalCount()
     {
         $database = new Database();
         $db = $database->getConnection();

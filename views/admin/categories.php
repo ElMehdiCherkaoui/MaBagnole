@@ -206,7 +206,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['category_id'])) {
 
 
 
-    <!-- EDIT CATEGORY MODAL -->
     <div id="editCategoryModal"
         class="flex fixed inset-0 bg-black bg-opacity-70 hidden items-center justify-center z-50">
 
@@ -218,7 +217,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['category_id'])) {
 
             <form method="POST" action="categories.php" class="space-y-4">
 
-                <!-- HIDDEN ID -->
                 <input type="hidden" name="category_id" id="editCategoryId">
 
                 <div>

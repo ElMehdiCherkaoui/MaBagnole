@@ -18,14 +18,12 @@ $vehicles = (new Vehicle)->getAllVehicles();
 
 <body class="bg-gray-50 min-h-screen">
 
-    <!-- NAVBAR -->
     <nav class="bg-white shadow-md">
         <div class="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
             <h1 class="text-2xl font-bold text-blue-600 flex items-center">
                 <i class="fas fa-car mr-2"></i> MaBagnole
             </h1>
 
-            <!-- Desktop Menu -->
             <div class="hidden md:flex space-x-4 items-center">
                 <div class="text-gray-700 font-medium">Welcome, <?= $user->userName;  ?></div>
                 <a href="dashboard.php"
@@ -73,11 +71,9 @@ $vehicles = (new Vehicle)->getAllVehicles();
             </button>
         </div>
 
-        <!-- VEHICLES GRID -->
         <div id="vehicleGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             <?php foreach ($vehicles as $vehicle): ?>
 
-            <!-- CARD -->
             <div class="vehicle-card bg-white shadow-md rounded-xl overflow-hidden hover:shadow-xl transition transform hover:-translate-y-1"
                 data-name="tesla model s" data-features="electric automatic" data-category="car">
                 <img src="<?= $vehicle->image ?>" alt="<?= $vehicle->image ?>" class="h-48 w-full object-cover">
@@ -173,7 +169,6 @@ $vehicles = (new Vehicle)->getAllVehicles();
         </div>
     </div>
 
-    <!-- FOOTER -->
     <footer class="bg-white border-t shadow-inner mt-16">
         <div class="max-w-7xl mx-auto px-6 py-4 text-center text-gray-500 flex items-center justify-center">
             <i class="fas fa-copyright mr-2"></i> 2025 MaBagnole — All rights reserved.

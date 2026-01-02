@@ -22,7 +22,6 @@ $user = (new User)->listUserLogged($_SESSION['userEmailLogin']);
                 <i class="fas fa-car mr-2"></i> MaBagnole
             </h1>
 
-            <!-- Desktop Menu -->
             <div class="hidden md:flex space-x-4 items-center">
                 <div class="text-gray-700 font-medium">Welcome,
                     <?= $user->userName;  ?>
@@ -33,7 +32,6 @@ $user = (new User)->listUserLogged($_SESSION['userEmailLogin']);
                     class="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600 transition">Logout</a>
             </div>
 
-            <!-- Mobile Menu Button -->
             <div class="md:hidden">
                 <button id="mobile-menu-button" class="text-gray-700 hover:text-blue-600 focus:outline-none">
                     <i class="fas fa-bars text-xl"></i>
@@ -41,7 +39,6 @@ $user = (new User)->listUserLogged($_SESSION['userEmailLogin']);
             </div>
         </div>
 
-        <!-- Mobile Menu -->
         <div id="mobile-menu" class="md:hidden hidden bg-white border-t">
             <div class="px-6 py-4 space-y-2">
                 <div class="text-gray-700 font-medium">Welcome, <?= $user->userName;  ?></div>
