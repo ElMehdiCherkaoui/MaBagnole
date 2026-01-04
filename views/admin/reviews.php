@@ -1,7 +1,12 @@
 <?php
 require_once __DIR__ . '/../../autoload.php';
 
-$reviews = (new Review())->listReviews();
+$reviews = (new Review())->listAllReviews();
+
+if ($_SERVER['REQUEST_METHOD'] == "POST" && !empty($_POST["review_id"])) {
+    (new Review())->recoveryReview($_POST["review_id"]);
+    header('location: reviews.php');
+}
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -55,9 +60,6 @@ $reviews = (new Review())->listReviews();
         <h1 class="text-4xl font-bold text-red-500 mb-8 flex items-center">
             <i class="fas fa-star mr-3"></i> Manage Reviews
         </h1>
-
-
-
         <div class="overflow-x-auto">
             <table class="min-w-full bg-gray-800 rounded-xl border border-gray-700">
                 <thead>
@@ -73,24 +75,32 @@ $reviews = (new Review())->listReviews();
                 </thead>
                 <tbody class="text-gray-100">
                     <?php foreach ($reviews as $review): ?>
-                        <tr class="border-b border-gray-700 hover:bg-gray-700 transition">
-                            <td class="px-6 py-4">
-                                <?= $review->Review_id ?>
-                            </td>
-                            <td class="px-6 py-4"><?= $review->vehicleModel ?></td>
-                            <td class="px-6 py-4"> <?= $review->userName ?></td>
-                            <td class="px-6 py-4"> <?= $review->reviewRate ?></td>
-                            <td class="px-6 py-4"> <?= $review->reviewComment ?></td>
-                            <?php if ($review->reviewDeleteTime == NULL): ?>
-                                <td class="px-6 py-4"> <span class="text-green-500">Active</span></td>
-                            <?php else: ?>
-                                <td class="px-6 py-4"> <?= $review->reviewDeleteTime ?></td>
-                            <?php endif ?>
-                            <td class="px-6 py-4 flex gap-2">
-                                <button
-                                    class="px-3 py-1 bg-red-800 hover:bg-red-900 rounded text-white font-semibold">Delete</button>
-                            </td>
-                        </tr>
+                    <tr class="border-b border-gray-700 hover:bg-gray-700 transition">
+                        <td class="px-6 py-4">
+                            <?= $review->Review_id ?>
+                        </td>
+                        <td class="px-6 py-4"><?= $review->vehicleModel ?></td>
+                        <td class="px-6 py-4"> <?= $review->userName ?></td>
+                        <td class="px-6 py-4"> <?= $review->reviewRate ?></td>
+                        <td class="px-6 py-4"> <?= $review->reviewComment ?></td>
+                        <?php if ($review->reviewDeleteTime == NULL): ?>
+                        <td class="px-6 py-4"> <span class="text-green-500">Active</span></td>
+                        <td class="px-6 py-4 flex gap-2 text-gray-400">No Action</td>
+                        <?php else: ?> <td class="px-6 py-4"> <?= $review->reviewDeleteTime ?>
+                        </td>
+                        <td class="px-6 py-4 flex gap-2">
+                            <form method="POST" action="reviews.php" ;
+                                onsubmit="return confirm('Are you sure you want to recovery this review?')">
+                                <input type="hidden" name="review_id" value="<?= $review->Review_id ?>">
+                                <button type="submit"
+                                    class="px-3 py-1 bg-red-800 hover:bg-red-900 rounded text-white font-semibold">
+                                    Recovery
+                                </button>
+                            </form>
+                        </td>
+                        <?php endif ?>
+
+                    </tr>
                     <?php endforeach ?>
                 </tbody>
             </table>
