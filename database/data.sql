@@ -54,9 +54,33 @@ create TABLE Review (
     FOREIGN KEY (reviewIdVehicle) REFERENCES Vehicle (Vehicle_id)
 );
 
-SELECT * FROM Users;
+CREATE VIEW ListeVehicules AS
+SELECT *
+FROM
+    Vehicle v
+    LEFT JOIN Category ca ON v.vehicleIdCategory = ca.Category_id
+    LEFT JOIN Review r ON v.Vehicle_id = r.reviewIdVehicle;
 
-UPDATE users set userRole = 'admin' where Users_id = 1;
+SELECT * FROM ListeVehicules;
+
+CREATE PROCEDURE AjouterReservation(
+    IN p_start DATE,
+    IN p_end DATE,
+    IN p_PickUpLocation VARCHAR(255),
+    IN p_Status VARCHAR(50),
+    IN p_TotalAmount DECIMAL(10,2),
+    IN p_user_id INT,
+    IN p_vehicle_id INT
+)
+BEGIN
+    INSERT INTO Reservation 
+            (reservationStartDate, reservationEndDate, reservationPickUpLocation,
+             reservationStatus, reservationTotalAmount, reservationIdUser, reservationIdVehicle)
+    VALUES (p_start, p_end, p_PickUpLocation, p_Status, p_TotalAmount, p_user_id, p_vehicle_id);
+END;
+
+
+call AjouterReservation('2026-01-10', '2026-01-15','agadir','done',130.00,1,1);
 
 INSERT INTO
     Category (
@@ -114,7 +138,7 @@ INSERT INTO
         vehicleIdCategory
     )
 VALUES (
-        'sedan_toyota_camry.jpg',
+        'https://mkt-vehicleimages-prd.autotradercdn.ca/photos/chrome/Expanded/White/2020TOC020016/2020TOC02001601.jpg',
         'Toyota Camry',
         'Reliable and comfortable sedan',
         45.00,
@@ -122,7 +146,7 @@ VALUES (
         1
     ),
     (
-        'sedan_honda_accord.jpg',
+        'https://di-uploads-pod1.dealerinspire.com/wallawallavalleyhonda/uploads/2016/10/2017-Honda-Accord-Features.jpg',
         'Honda Accord',
         'Spacious sedan with smooth driving',
         48.00,
@@ -352,8 +376,7 @@ INSERT INTO
         reviewIdUser,
         reviewIdVehicle
     )
-VALUES
-    (
+VALUES (
         5,
         'Excellent car, very clean and comfortable.',
         NULL,
@@ -409,18 +432,17 @@ VALUES
         3,
         4
     ),
-
-(
-    1,
-    'Very bad experience, car was dirty.',
-    '2025-12-20 14:30:00',
-    4,
-    1
-),
-(
-    2,
-    'Vehicle had mechanical issues.',
-    '2025-12-22 09:15:00',
-    5,
-    2
-);
+    (
+        1,
+        'Very bad experience, car was dirty.',
+        '2025-12-20 14:30:00',
+        4,
+        1
+    ),
+    (
+        2,
+        'Vehicle had mechanical issues.',
+        '2025-12-22 09:15:00',
+        5,
+        2
+    );
