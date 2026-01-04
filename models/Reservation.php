@@ -138,11 +138,29 @@ class Reservation
         $database = new Database();
         $db = $database->getConnection();
 
-        $sql = "SELECT r.*, v.vehicleModel, v.image FROM Reservation r JOIN Vehicle v ON r.reservationIdVehicle = v.Vehicle_id WHERE r.reservationIdUser = :userId ORDER BY r.reservationStartDate DESC";
+        $sql = "SELECT * FROM Reservation r JOIN Vehicle v ON r.reservationIdVehicle = v.Vehicle_id WHERE r.reservationIdUser = :userId ORDER BY r.Reservation_id DESC";
         $stmt = $db->prepare($sql);
         $stmt->bindParam(':userId', $userId);
         $stmt->execute();
 
         return $stmt->fetchAll(PDO::FETCH_OBJ);
+    }
+    public function finishReservation($id)
+    {
+        $database = new Database();
+        $db = $database->getConnection();
+
+        $sql = "UPDATE Reservation 
+                SET reservationStatus = 'done'
+                WHERE reservation_id = :id";
+
+        $stmt = $db->prepare($sql);
+        $stmt->bindParam(':id', $id);
+
+        $check = $stmt->execute();
+        if ($check) {
+            return "success";
+        }
+        return "conection problem";
     }
 }
