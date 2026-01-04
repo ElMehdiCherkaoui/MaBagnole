@@ -17,6 +17,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         header('Location: reservations.php');
         exit;
     }
+    if (isset($_POST['finishReservation'])) {
+        $reservation->finishReservation((int) $_POST['reservation_id']);
+        header('Location: reservations.php');
+        exit;
+    }
 }
 ?>
 <!DOCTYPE html>
@@ -89,87 +94,99 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <tbody class="text-gray-100">
 
                     <?php foreach ($reservations as $res): ?>
-                        <tr class="border-b border-gray-700 hover:bg-gray-700 transition">
+                    <tr class="border-b border-gray-700 hover:bg-gray-700 transition">
 
-                            <td class="px-6 py-4"><?= $res->reservation_id ?></td>
+                        <td class="px-6 py-4"><?= $res->reservation_id ?></td>
 
-                            <td class="px-6 py-4">
-                                <?= htmlspecialchars($res->vehicleModel) ?>
-                            </td>
+                        <td class="px-6 py-4">
+                            <?= htmlspecialchars($res->vehicleModel) ?>
+                        </td>
 
-                            <td class="px-6 py-4">
-                                <?= htmlspecialchars($res->userName) ?>
-                            </td>
+                        <td class="px-6 py-4">
+                            <?= htmlspecialchars($res->userName) ?>
+                        </td>
 
-                            <td class="px-6 py-4">
-                                <?= htmlspecialchars($res->reservationPickUpLocation) ?> - <?= $res->reservationStartDate ?>
-                            </td>
+                        <td class="px-6 py-4">
+                            <?= htmlspecialchars($res->reservationPickUpLocation) ?> - <?= $res->reservationStartDate ?>
+                        </td>
 
-                            <td class="px-6 py-4">
-                                <?= htmlspecialchars($res->reservationPickUpLocation) ?> - <?= $res->reservationEndDate ?>
-                            </td>
+                        <td class="px-6 py-4">
+                            <?= htmlspecialchars($res->reservationPickUpLocation) ?> - <?= $res->reservationEndDate ?>
+                        </td>
 
-                            <td class="px-6 py-4">
-                                $<?= number_format($res->reservationTotalAmount, 2) ?>
-                            </td>
+                        <td class="px-6 py-4">
+                            $<?= number_format($res->reservationTotalAmount, 2) ?>
+                        </td>
 
-                            <td class="px-6 py-4">
-                                <?php if ($res->reservationStatus === 'pending'): ?>
-                                    <span class="px-2 py-1 rounded-full bg-yellow-500 text-white font-semibold text-sm">
-                                        Pending
-                                    </span>
+                        <td class="px-6 py-4">
+                            <?php if ($res->reservationStatus === 'pending'): ?>
+                            <span class="px-2 py-1 rounded-full bg-yellow-500 text-white font-semibold text-sm">
+                                Pending
+                            </span>
 
-                                <?php elseif ($res->reservationStatus === 'confirmed'): ?>
-                                    <span class="px-2 py-1 rounded-full bg-green-600 text-white font-semibold text-sm">
-                                        Confirmed
-                                    </span>
+                            <?php elseif ($res->reservationStatus === 'confirmed'): ?>
+                            <span class="px-2 py-1 rounded-full bg-green-600 text-white font-semibold text-sm">
+                                Confirmed
+                            </span>
+                            <?php elseif ($res->reservationStatus === 'done'): ?>
+                            <span class="px-2 py-1 rounded-full bg-green-600 text-white font-semibold text-sm">
+                                Done
+                            </span>
 
-                                <?php else: ?>
-                                    <span class="px-2 py-1 rounded-full bg-gray-500 text-white font-semibold text-sm">
-                                        Cancelled
-                                    </span>
-                                <?php endif; ?>
-                            </td>
+                            <?php else: ?>
+                            <span class="px-2 py-1 rounded-full bg-gray-500 text-white font-semibold text-sm">
+                                Cancelled
+                            </span>
+                            <?php endif; ?>
+                        </td>
 
-                            <td class="px-6 py-4 flex gap-2">
+                        <td class="px-6 py-4 flex gap-2">
 
-                                <?php if ($res->reservationStatus === 'pending'): ?>
+                            <?php if ($res->reservationStatus === 'pending'): ?>
 
-                                    <form method="POST">
-                                        <input type="hidden" name="reservation_id" value="<?= $res->reservation_id ?>">
-                                        <button name="confirm_reservation"
-                                            class="px-3 py-1 bg-green-600 hover:bg-green-700 rounded text-white font-semibold">
-                                            Confirm
-                                        </button>
-                                    </form>
+                            <form method="POST">
+                                <input type="hidden" name="reservation_id" value="<?= $res->reservation_id ?>">
+                                <button name="confirm_reservation"
+                                    class="px-3 py-1 bg-green-600 hover:bg-green-700 rounded text-white font-semibold">
+                                    Confirm
+                                </button>
+                            </form>
 
-                                    <form method="POST">
-                                        <input type="hidden" name="reservation_id" value="<?= $res->reservation_id ?>">
-                                        <button name="cancel_reservation"
-                                            class="px-3 py-1 bg-red-800 hover:bg-red-900 rounded text-white font-semibold">
-                                            Cancel
-                                        </button>
-                                    </form>
+                            <form method="POST">
+                                <input type="hidden" name="reservation_id" value="<?= $res->reservation_id ?>">
+                                <button name="cancel_reservation"
+                                    class="px-3 py-1 bg-red-800 hover:bg-red-900 rounded text-white font-semibold">
+                                    Cancel
+                                </button>
+                            </form>
 
-                                <?php elseif ($res->reservationStatus === 'confirmed'): ?>
+                            <?php elseif ($res->reservationStatus === 'confirmed'): ?>
 
-                                    <form method="POST">
-                                        <input type="hidden" name="reservation_id" value="<?= $res->reservation_id ?>">
-                                        <button name="cancel_reservation"
-                                            class="px-3 py-1 bg-red-800 hover:bg-red-900 rounded text-white font-semibold">
-                                            Cancel
-                                        </button>
-                                    </form>
+                            <form method="POST">
+                                <input type="hidden" name="reservation_id" value="<?= $res->reservation_id ?>">
+                                <button name="finishReservation"
+                                    class="px-3 py-1 bg-green-600 hover:bg-green-700 rounded text-white font-semibold">
+                                    Done
+                                </button>
+                            </form>
 
-                                <?php else: ?>
+                            <form method="POST">
+                                <input type="hidden" name="reservation_id" value="<?= $res->reservation_id ?>">
+                                <button name="cancel_reservation"
+                                    class="px-3 py-1 bg-red-800 hover:bg-red-900 rounded text-white font-semibold">
+                                    Cancel
+                                </button>
+                            </form>
 
-                                    <span class="text-gray-400 italic">No Actions</span>
+                            <?php else: ?>
 
-                                <?php endif; ?>
+                            <span class="text-gray-400 italic">No Actions</span>
 
-                            </td>
+                            <?php endif; ?>
 
-                        </tr>
+                        </td>
+
+                    </tr>
                     <?php endforeach; ?>
 
                 </tbody>
