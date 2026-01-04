@@ -1,22 +1,31 @@
 <?php
 require_once __DIR__ . '/../../autoload.php';
 session_start();
-$user = (new User)->listUserLogged($_SESSION['userEmailLogin']);
 
-$categories = (new Category)->listCategory();
-
-$search = $_POST['search'] ?? '';
+$search   = $_POST['search'] ?? '';
 $category = $_POST['category'] ?? 'all';
 
 if (!empty($search)) {
     $filteredVehicles = (new Vehicle)->getVehiclesByModel($search);
-} elseif ($category !== 'all') {
-    $filteredVehicles = (new Vehicle)->getVehiclesByCategory($category);
 } else {
     $filteredVehicles = (new Vehicle)->getAllVehicles();
 }
 
+if (isset($_POST['ajax']) && $_POST['ajax'] === 'true') {
+    header('Content-Type: application/json');
+
+    if ($category !== 'all') {
+        $filteredVehicles = (new Vehicle)->getVehiclesByCategory($category);
+    }
+    echo json_encode($filteredVehicles);
+    exit;
+}
+
+$user = (new User)->listUserLogged($_SESSION['userEmailLogin']);
+$categories = (new Category)->listCategory();
 ?>
+
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -99,7 +108,7 @@ if (!empty($search)) {
                     <th class="px-6 py-3">Actions</th>
                 </tr>
             </thead>
-            <tbody>
+            <tbody id="vehiclesContainer">
                 <?php foreach ($filteredVehicles as $vehicle): ?>
                 <tr class="bg-white border-b hover:bg-gray-50">
                     <td class="px-6 py-4">
@@ -127,9 +136,12 @@ if (!empty($search)) {
         </div>
     </footer>
 
+
     <script>
+    let table;
+
     $(document).ready(function() {
-        $('#vehiclesTable').DataTable({
+        table = $('#vehiclesTable').DataTable({
             "pageLength": 10,
             "lengthChange": false,
             "searching": false,
@@ -141,8 +153,42 @@ if (!empty($search)) {
                 }
             }
         });
+
+    })
+
+    const categoryFilter = document.getElementById('categoryFilter');
+
+    categoryFilter.addEventListener("change", () => {
+        loadVehicles(categoryFilter.value);
     });
+
+    function loadVehicles(category) {
+        fetch(window.location.pathname, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/x-www-form-urlencoded"
+                },
+                body: `category=${encodeURIComponent(category)}&ajax=true`
+            })
+            .then(res => res.json())
+            .then(data => {
+                table.clear();
+                data.forEach(vehicle => {
+                    table.row.add([
+                        `<img src="${vehicle.image}" alt="${vehicle.vehicleModel}" class="h-16 w-24 object-cover rounded">`,
+                        vehicle.vehicleModel,
+                        vehicle.categoryName,
+                        `${vehicle.vehiclePricePerDay} MAD/day`,
+                        `<a href="vehicle_details.php?id=${vehicle.Vehicle_id}" class="text-blue-600 hover:text-blue-800">View Details</a>`
+                    ]);
+                });
+
+                table.draw();
+            })
+            .catch(error => console.error('Error:', error));
+    }
     </script>
+
 
 </body>
 
