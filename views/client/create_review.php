@@ -1,8 +1,41 @@
-<?php 
+<?php
 require_once __DIR__ . '/../../autoload.php';
 session_start();
 $user = (new User)->listUserLogged($_SESSION['userEmailLogin']);
 
+
+$vehicleId = (int)$_SESSION['vehicleId'];
+
+$vehicle = (new Vehicle)->getVehicle($vehicleId);
+
+
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+
+    $rating  = $_POST['rating'];
+    $comment = $_POST['comment'];
+    $vehicle = $vehicleId;
+    $userid = $user->Users_id;
+
+    if ($rating && $comment && $vehicle) {
+
+        $review = new Review();
+        $review->reviewRate = $rating;
+        $review->reviewComment = $comment;
+        $review->reviewIdVehicle = $vehicle;
+
+        $result = $review->CreateReview($userid);
+
+        if ($result === 'success') {
+            header('Location: my_reviews.php');
+            exit;
+        } else {
+            $error = "Something went wrong";
+        }
+    } else {
+        $error = "All fields are required";
+    }
+}
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -31,22 +64,8 @@ $user = (new User)->listUserLogged($_SESSION['userEmailLogin']);
                     class="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600 transition">Logout</a>
             </div>
 
-            <div class="md:hidden">
-                <button id="mobile-menu-button" class="text-gray-700 hover:text-blue-600 focus:outline-none">
-                    <i class="fas fa-bars text-xl"></i>
-                </button>
-            </div>
         </div>
 
-        <div id="mobile-menu" class="md:hidden hidden bg-white border-t">
-            <div class="px-6 py-4 space-y-2">
-                <div class="text-gray-700 font-medium">Welcome, <?= $user->userName;  ?></div>
-                <a href="dashboard.php"
-                    class="block bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700 transition">Dashboard</a>
-                <a href="../logout.php"
-                    class="block bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600 transition">Logout</a>
-            </div>
-        </div>
     </nav>
 
     <script>
@@ -67,19 +86,20 @@ $user = (new User)->listUserLogged($_SESSION['userEmailLogin']);
 
         <div class="bg-white shadow-md rounded-2xl p-8 border-l-4 border-blue-500 hover:shadow-xl transition">
             <form action="#" method="POST" class="space-y-6">
-
+                <?php if (!empty($error)): ?>
+                <div class="bg-red-100 text-red-700 p-3 rounded mb-4">
+                    <?= $error ?>
+                </div>
+                <?php endif; ?>
                 <div>
                     <label for="vehicle" class="block font-semibold mb-2 text-gray-700 flex items-center">
-                        <i class="fas fa-car mr-2 text-blue-600"></i> Select Vehicle
+                        <i class="fas fa-car mr-2 text-blue-600"></i> Vehicle
                     </label>
-                    <select id="vehicle" name="vehicle"
-                        class="w-full p-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:outline-none">
-                        <option value="tesla_model_s">Tesla Model S</option>
-                        <option value="yamaha_r1">Yamaha R1</option>
-                        <option value="range_rover">Range Rover</option>
-                        <option value="bmw_x5">BMW X5</option>
-                    </select>
+                    <input type="text" disabled
+                        class="w-full p-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                        placeholder="<?php echo htmlspecialchars($vehicle->vehicleModel); ?>">
                 </div>
+
 
                 <div>
                     <label for="rating" class="block font-semibold mb-2 text-gray-700 flex items-center">
@@ -107,7 +127,6 @@ $user = (new User)->listUserLogged($_SESSION['userEmailLogin']);
                     class="w-full p-3 rounded-xl bg-blue-500 hover:bg-blue-600 font-semibold text-white shadow-lg transition flex items-center justify-center">
                     <i class="fas fa-paper-plane mr-2"></i> Submit Review
                 </button>
-
             </form>
         </div>
     </main>
