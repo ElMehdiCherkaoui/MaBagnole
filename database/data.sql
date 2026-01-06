@@ -80,11 +80,12 @@ CREATE TABLE Tags (
 )
 
 CREATE TABLE Article_Tags (
+    Article_Tag_Id INT AUTO_INCREMENT PRIMARY KEY,
     articleTagId INT NOT NULL,
     tagArticleId INT NOT NULL,
     FOREIGN KEY (articleTagId) REFERENCES Articles (Article_id),
     FOREIGN KEY (tagArticleId) REFERENCES Tags (Tag_id)
-);
+)
 
 CREATE TABLE Comments (
     Comment_id INT AUTO_INCREMENT PRIMARY KEY,
