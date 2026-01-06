@@ -88,6 +88,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['Vehicleid'])) {
                 class="block px-4 py-3 rounded-lg text-red-500 font-semibold hover:bg-red-900 hover:text-white transition flex items-center">
                 <i class="fas fa-tags mr-2"></i> Categories
             </a>
+            <a href="admin_themes.php"
+                class="block px-4 py-3 rounded-lg text-red-500 font-semibold hover:bg-red-900 hover:text-white transition flex items-center">
+                <i class="fas fa-clipboard-list mr-2"></i> Themes
+            </a>
+            <a href="admin_articles.php"
+                class="block px-4 py-3 rounded-lg text-red-500 font-semibold hover:bg-red-900 hover:text-white transition flex items-center">
+                <i class="fas fa-newspaper mr-2"></i> Articles
+            </a>
             <a href="reservations.php"
                 class="block px-4 py-3 rounded-lg text-red-500 font-semibold hover:bg-red-900 hover:text-white transition flex items-center">
                 <i class="fas fa-calendar-check mr-2"></i> Reservations
@@ -95,6 +103,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['Vehicleid'])) {
             <a href="reviews.php"
                 class="block px-4 py-3 rounded-lg text-red-500 font-semibold hover:bg-red-900 hover:text-white transition flex items-center">
                 <i class="fas fa-star mr-2"></i> Reviews
+            </a>
+            <a href="admin_tags.php"
+                class="block px-4 py-3 rounded-lg text-red-500 font-semibold hover:bg-red-900 hover:text-white transition flex items-center">
+                <i class="fas fa-tags mr-2"></i> Tags
+            </a>
+            <a href="admin_comments.php"
+                class="block px-4 py-3 rounded-lg text-red-500 font-semibold hover:bg-red-900 hover:text-white transition flex items-center">
+                <i class="fas fa-comments mr-2"></i> Comments
             </a>
             <a href="../logout.php"
                 class="block px-4 py-3 rounded-lg text-gray-400 font-semibold hover:bg-red-900 hover:text-white transition flex items-center">
