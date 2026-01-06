@@ -54,6 +54,58 @@ create TABLE Review (
     FOREIGN KEY (reviewIdVehicle) REFERENCES Vehicle (Vehicle_id)
 );
 
+CREATE TABLE Themes (
+    Theme_id INT AUTO_INCREMENT PRIMARY KEY,
+    themeTitle VARCHAR(255) NOT NULL,
+    themeDescription TEXT NOT NULL
+)
+
+CREATE TABLE Articles (
+    Article_id INT AUTO_INCREMENT PRIMARY KEY,
+    articleThemeId INT,
+    articleUserId INT,
+    articleTitle VARCHAR(255),
+    articleContent TEXT NOT NULL,
+    media_url VARCHAR(255) NULL,
+    articleStatus VARCHAR(255) NOT NULL,
+    created_at DATETIME NOT NULL DEFAULT NOW(),
+    updated_at DATETIME NOT NULL DEFAULT NOW() ON UPDATE NOW(),
+    FOREIGN KEY (articleThemeId) REFERENCES Themes (Theme_id),
+    FOREIGN KEY (articleUserId) REFERENCES Users (Users_id)
+)
+
+CREATE TABLE Tags (
+    Tag_id INT AUTO_INCREMENT PRIMARY KEY,
+    label VARCHAR(80) NOT NULL UNIQUE
+)
+
+CREATE TABLE Article_Tags (
+    articleTagId INT NOT NULL,
+    tagArticleId INT NOT NULL,
+    FOREIGN KEY (articleTagId) REFERENCES Articles (Article_id),
+    FOREIGN KEY (tagArticleId) REFERENCES Tags (Tag_id)
+);
+
+CREATE TABLE Comments (
+    Comment_id INT AUTO_INCREMENT PRIMARY KEY,
+    commentArticleId INT NOT NULL,
+    commentUserId INT NOT NULL,
+    commentContent TEXT NOT NULL,
+    commentCreatedAt DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    commentDeletedAt DATETIME DEFAULT NULL,
+    FOREIGN KEY (commentArticleId) REFERENCES Articles (Article_id),
+    FOREIGN KEY (commentUserId) REFERENCES Users (Users_id)
+);
+
+CREATE TABLE Favorite_Articles (
+    Favorite_id INT AUTO_INCREMENT PRIMARY KEY,
+    favoriteArticleUserId INT NOT NULL,
+    favoriteArticleId INT NOT NULL,
+    favoriteArticleCreatedAt DATETIME NOT NULL DEFAULT NOW(),
+    FOREIGN KEY (favoriteArticleUserId) REFERENCES Users (Users_id),
+    FOREIGN KEY (favoriteArticleId) REFERENCES Articles (Article_id)
+);
+
 CREATE VIEW ListeVehicules AS
 SELECT *
 FROM
@@ -64,13 +116,13 @@ FROM
 SELECT * FROM ListeVehicules;
 
 CREATE PROCEDURE AjouterReservation(
-    IN p_start DATE,
-    IN p_end DATE,
-    IN p_PickUpLocation VARCHAR(255),
-    IN p_Status VARCHAR(50),
-    IN p_TotalAmount DECIMAL(10,2),
-    IN p_user_id INT,
-    IN p_vehicle_id INT
+    IN p_start DATE ,
+    IN p_end DATE ,
+    IN p_PickUpLocation VARCHAR(255) ,
+    IN p_Status VARCHAR(50) ,
+    IN p_TotalAmount DECIMAL(10,2) ,
+    IN p_user_id INT ,
+    IN p_vehicle_id INT 
 )
 BEGIN
     INSERT INTO Reservation 
@@ -79,8 +131,15 @@ BEGIN
     VALUES (p_start, p_end, p_PickUpLocation, p_Status, p_TotalAmount, p_user_id, p_vehicle_id);
 END;
 
-
-call AjouterReservation('2026-01-10', '2026-01-15','agadir','done',130.00,1,1);
+call AjouterReservation (
+    '2026-01-10',
+    '2026-01-15',
+    'agadir',
+    'done',
+    130.00,
+    1,
+    1
+);
 
 INSERT INTO
     Category (
@@ -446,3 +505,166 @@ VALUES (
         5,
         2
     );
+
+INSERT INTO
+    Themes (themeTitle, themeDescription)
+VALUES (
+        'Car Rental Tips',
+        'Useful tips for renting vehicles efficiently and cost-effectively.'
+    ),
+    (
+        'Automobile Reviews',
+        'Reviews and feedback on the latest car models available in the market.'
+    ),
+    (
+        'Maintenance & Care',
+        'Advice on maintaining and caring for vehicles to extend their lifespan.'
+    ),
+    (
+        'Travel Adventures',
+        'Stories from car trips and travel adventures.'
+    ),
+    (
+        'Electric Vehicles',
+        'Information and updates on electric vehicles and their impact on transportation.'
+    );
+
+INSERT INTO
+    Users (
+        userName,
+        userEmail,
+        userRole,
+        password_hash,
+        userStatus
+    )
+VALUES (
+        'John Doe',
+        'johndoe@email.com',
+        'CLIENT',
+        'hashed_password_1',
+        'active'
+    ),
+    (
+        'Jane Smith',
+        'janesmith@email.com',
+        'CLIENT',
+        'hashed_password_2',
+        'active'
+    ),
+    (
+        'Admin User',
+        'admin@email.com',
+        'ADMIN',
+        'hashed_password_3',
+        'active'
+    );
+
+INSERT INTO
+    Articles (
+        articleThemeId,
+        articleUserId,
+        articleTitle,
+        articleContent,
+        media_url,
+        articleStatus
+    )
+VALUES (
+        1,
+        1,
+        '5 Tips for Renting a Car',
+        'Learn 5 useful tips that will make your car rental experience smoother and more affordable.',
+        'car_rentals.jpg',
+        'approved'
+    ),
+    (
+        2,
+        2,
+        'The Latest Review of Tesla Model S',
+        'A detailed review of the Tesla Model S, its features, performance, and reliability.',
+        'tesla_model_s.jpg',
+        'approved'
+    ),
+    (
+        3,
+        3,
+        'How to Maintain Your Car’s Engine',
+        'A step-by-step guide on how to maintain your car’s engine and ensure its longevity.',
+        NULL,
+        'pending'
+    ),
+    (
+        4,
+        2,
+        'The Best Road Trips for 2026',
+        'Planning your next road trip? Here are the best road trips to take in 2026.',
+        NULL,
+        'approved'
+    ),
+    (
+        5,
+        1,
+        'The Future of Electric Vehicles',
+        'A look at the impact of electric vehicles on the transportation industry and what the future holds.',
+        NULL,
+        'pending'
+    );
+
+INSERT INTO
+    Tags (label)
+VALUES ('tips'),
+    ('review'),
+    ('maintenance'),
+    ('travel'),
+    ('electric');
+
+INSERT INTO
+    Article_Tags (articleTagId, tagArticleId)
+VALUES (1, 1),
+    (2, 2),
+    (3, 3), 
+    (4, 4),
+    (5, 5);
+
+
+
+INSERT INTO
+    Comments (
+        commentArticleId,
+        commentUserId,
+        commentContent
+    )
+VALUES (
+        1,
+        2,
+        'Great tips! This will help me save a lot on rentals next time.'
+    ),
+    (
+        2,
+        1,
+        'The Tesla Model S is an incredible car! Thanks for the thorough review.'
+    ),
+    (
+        3,
+        3,
+        'I will definitely follow these engine maintenance tips for my car.'
+    ),
+    (
+        4,
+        2,
+        'I am planning a road trip next year and will check out your recommendations.'
+    ),
+    (
+        5,
+        1,
+        'I am looking forward to the future of electric vehicles, especially for city travel.'
+    );
+
+
+INSERT INTO
+    Favorite_Articles (
+        favoriteArticleUserId,
+        favoriteArticleId
+    )
+VALUES (1, 2), 
+    (2, 4), 
+    (3, 5);
