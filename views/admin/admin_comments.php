@@ -100,8 +100,6 @@
                                     class="px-3 py-1 bg-red-600 hover:bg-red-700 rounded text-white font-semibold">Delete</button>
                             </form>
                         </td>
-                    </tr>
-                    Repeat for other comments -->
                 </tbody>
             </table>
         </div>

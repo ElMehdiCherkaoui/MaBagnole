@@ -1,3 +1,53 @@
+<?php
+require_once __DIR__ . '/../../autoload.php';
+
+$Tag = new Tag();
+$tags = $Tag->listTags();
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['add_tag'])) {
+
+    $label = $_POST['label'];
+
+    $result = $Tag->addTag($label);
+
+    if ($result) {
+        header('Location: admin_tags.php');
+        exit;
+    } else {
+        echo "Error while adding tag";
+    }
+}
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['edit_tag'])) {
+
+    $label = $_POST['label'];
+    $id    = $_POST['tag_id'];
+
+    $result = $Tag->editTag($id, $label);
+
+    if ($result) {
+        header('Location: admin_tags.php');
+        exit;
+    } else {
+        echo "Error while editing tag";
+    }
+}
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_tag'])) {
+
+    $id = $_POST['tag_id'];
+
+    $result = $Tag->deleteTag($id);
+
+    if ($result) {
+        header('Location: admin_tags.php');
+        exit;
+    } else {
+        echo "Error while deleting tag";
+    }
+}
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -80,54 +130,54 @@
                     <tr class="text-left text-gray-300 border-b border-gray-700">
                         <th class="px-6 py-3">ID</th>
                         <th class="px-6 py-3">Tag Name</th>
-                        <th class="px-6 py-3">Description</th>
                         <th class="px-6 py-3">Actions</th>
                     </tr>
                 </thead>
+
                 <tbody class="text-gray-100">
+                    <?php foreach ($tags as $tag): ?>
                     <tr class="border-b border-gray-700 hover:bg-gray-700 transition">
-                        <td class="px-6 py-4">1</td>
-                        <td class="px-6 py-4">SUV</td>
-                        <td class="px-6 py-4">Sports Utility Vehicles</td>
+                        <td class="px-6 py-4"><?= $tag->Tag_id ?></td>
+                        <td class="px-6 py-4"><?= htmlspecialchars($tag->label) ?></td>
+
                         <td class="px-6 py-4 flex gap-2">
-                            <button
-                                class="px-3 py-1 bg-blue-600 hover:bg-blue-700 rounded text-white font-semibold editBtn"
-                                data-id="1" data-name="SUV" data-description="Sports Utility Vehicles">
+                            <button class="px-3 py-1 bg-blue-600 hover:bg-blue-700 rounded text-white font-semibold"
+                                onclick="openEditTagModal(<?= $tag->Tag_id ?>, '<?= htmlspecialchars($tag->label) ?>')">
                                 Edit
                             </button>
-                            <form method="POST" action="#"
-                                onsubmit="return confirm('Are you sure you want to delete this tag?')">
-                                <input type="hidden" name="tag_id" value="1">
-                                <button type="submit"
-                                    class="px-3 py-1 bg-red-600 hover:bg-red-700 rounded text-white font-semibold">Delete</button>
+
+
+                            <form method="POST" onsubmit="return confirm('Are you sure you want to delete this tag?')">
+                                <input type="hidden" name="tag_id" value="<?= $tag->Tag_id ?>">
+                                <button type="submit" name="delete_tag"
+                                    class="px-3 py-1 bg-red-600 hover:bg-red-700 rounded text-white font-semibold">
+                                    Delete
+                                </button>
                             </form>
                         </td>
                     </tr>
+                    <?php endforeach; ?>
                 </tbody>
             </table>
+
         </div>
     </main>
 
     <div id="addTagModal" class="flex fixed inset-0 bg-black bg-opacity-70 hidden items-center justify-center z-50">
+
         <div class="bg-gray-900 w-full max-w-md rounded-xl border border-gray-700 p-6">
             <div class="flex justify-between items-center mb-4">
                 <h2 class="text-2xl font-bold text-red-500">Add New Tag</h2>
                 <button id="closeAddTagModal" class="text-gray-400 hover:text-white text-xl">&times;</button>
             </div>
 
-            <form method="POST" action="tags.php" class="space-y-4">
+            <form method="POST" action="admin_tags.php" class="space-y-4">
                 <input type="hidden" name="add_tag" value="1">
 
                 <div>
                     <label class="block mb-1 text-sm font-semibold">Tag Name</label>
-                    <input type="text" name="tagName" required
+                    <input type="text" name="label" required
                         class="w-full px-4 py-2 rounded-lg bg-gray-800 border border-gray-600 text-white focus:outline-none focus:border-red-500">
-                </div>
-
-                <div>
-                    <label class="block mb-1 text-sm font-semibold">Description</label>
-                    <textarea name="tagDescription" required
-                        class="w-full px-4 py-2 rounded-lg bg-gray-800 border border-gray-600 text-white focus:outline-none focus:border-red-500"></textarea>
                 </div>
 
                 <div class="flex justify-end gap-3">
@@ -145,6 +195,78 @@
         </div>
     </div>
 
+    <div id="editTagModal" class="flex fixed inset-0 bg-black bg-opacity-70 hidden items-center justify-center z-50">
+
+        <div class="bg-gray-900 w-full max-w-md rounded-xl border border-gray-700 p-6">
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="text-2xl font-bold text-blue-500">Edit Tag</h2>
+                <button id="closeEditTagModal" class="text-gray-400 hover:text-white text-xl">&times;</button>
+            </div>
+
+            <form method="POST" action="admin_tags.php" class="space-y-4">
+                <input type="hidden" name="edit_tag" value="1">
+                <input type="hidden" name="tag_id" id="edit_tag_id">
+
+                <div>
+                    <label class="block mb-1 text-sm font-semibold">Tag Name</label>
+                    <input type="text" name="label" id="edit_tag_label" required
+                        class="w-full px-4 py-2 rounded-lg bg-gray-800 border border-gray-600 text-white focus:outline-none focus:border-blue-500">
+                </div>
+
+                <div class="flex justify-end gap-3">
+                    <button type="button" id="cancelEditTagModal"
+                        class="px-4 py-2 bg-gray-700 hover:bg-gray-600 rounded-lg font-semibold">
+                        Cancel
+                    </button>
+
+                    <button type="submit"
+                        class="px-5 py-2 bg-blue-600 hover:bg-blue-700 rounded-lg font-semibold text-white">
+                        Update
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+
 </body>
+<script>
+const addTagModal = document.getElementById('addTagModal');
+const closeAddTagModal = document.getElementById('closeAddTagModal');
+const cancelAddTagModal = document.getElementById('cancelAddTagModal');
+const openAddTagModal = document.getElementById("openAddTagModal");
+
+function AddTagModal() {
+    addTagModal.classList.remove('hidden');
+}
+
+function closeAddModal() {
+    addTagModal.classList.add('hidden');
+}
+openAddTagModal.addEventListener('click', AddTagModal);
+closeAddTagModal.addEventListener('click', closeAddModal);
+cancelAddTagModal.addEventListener('click', closeAddModal);
+
+
+const editTagModal = document.getElementById('editTagModal');
+const closeEditTagModal = document.getElementById('closeEditTagModal');
+const cancelEditTagModal = document.getElementById('cancelEditTagModal');
+
+const editTagIdInput = document.getElementById('edit_tag_id');
+const editTagLabelInput = document.getElementById('edit_tag_label');
+
+function openEditTagModal(tagId, label) {
+    editTagIdInput.value = tagId;
+    editTagLabelInput.value = label;
+    editTagModal.classList.remove('hidden');
+}
+
+function closeEditModal() {
+    editTagModal.classList.add('hidden');
+}
+
+closeEditTagModal.addEventListener('click', closeEditModal);
+cancelEditTagModal.addEventListener('click', closeEditModal);
+</script>
 
 </html>
