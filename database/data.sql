@@ -622,11 +622,9 @@ INSERT INTO
     Article_Tags (articleTagId, tagArticleId)
 VALUES (1, 1),
     (2, 2),
-    (3, 3), 
+    (3, 3),
     (4, 4),
     (5, 5);
-
-
 
 INSERT INTO
     Comments (
@@ -660,14 +658,21 @@ VALUES (
         'I am looking forward to the future of electric vehicles, especially for city travel.'
     );
 
-
 INSERT INTO
     Favorite_Articles (
         favoriteArticleUserId,
         favoriteArticleId
     )
-VALUES (1, 2), 
-    (2, 4), 
+VALUES (1, 2),
+    (2, 4),
     (3, 5);
 
 SELECT * FROM Users;
+
+SELECT * FROM Articles a
+        LEFT JOIN Themes t ON a.articleThemeId = t.Theme_id
+        LEFT JOIN Users u ON a.articleUserId = u.Users_id
+        LEFT JOIN Article_Tags au on au.articleTagId = a.Article_id
+        LEFT JOIN Tags tg on tg.Tag_id = au.tagArticleId
+        WHERE a.articleThemeId = 2;
+

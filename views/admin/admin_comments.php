@@ -1,3 +1,39 @@
+<?php
+require_once __DIR__ . '/../../autoload.php';
+
+$Comment = new Comment();
+
+$comments = $Comment->listAll();
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['edit_comment'])) {
+
+    $Comment->commentContent = $_POST['content'];
+    $commentId = $_POST['comment_id'];
+
+    $result = $Comment->editComment($commentId);
+
+    if ($result) {
+        header('Location: admin_comments.php');
+        exit;
+    } else {
+        echo "Error while editing comment";
+    }
+}
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_comment'])) {
+
+    $commentId = $_POST['comment_id'];
+
+    $result = $Comment->softDeleteComment($commentId);
+
+    if ($result) {
+        header('Location: admin_comments.php');
+        exit;
+    } else {
+        echo "Error while deleting comment";
+    }
+}
+?>
 <!DOCTYPE html>
 <html lang="en">
 
@@ -75,51 +111,77 @@
                         <th class="px-6 py-3">User</th>
                         <th class="px-6 py-3">Article</th>
                         <th class="px-6 py-3">Comment</th>
+                        <th class="px-6 py-3">Create Time</th>
                         <th class="px-6 py-3">Delete Time</th>
                         <th class="px-6 py-3">Actions</th>
                     </tr>
                 </thead>
                 <tbody class="text-gray-100">
+                    <?php foreach ($comments as $comment): ?>
                     <tr class="border-b border-gray-700 hover:bg-gray-700 transition">
-                        <td class="px-6 py-4">1</td>
-                        <td class="px-6 py-4">John Doe</td>
-                        <td class="px-6 py-4">Best SUV of the Year</td>
-                        <td class="px-6 py-4">Great article! I learned a lot.</td>
-                        <td class="px-6 py-4">2025/16/10</td>
+                        <td class="px-6 py-4"><?= $comment->Comment_id ?></td>
+
+                        <td class="px-6 py-4">
+                            <?= htmlspecialchars($comment->userName) ?>
+                        </td>
+
+                        <td class="px-6 py-4">
+                            <?= htmlspecialchars($comment->articleTitle) ?>
+                        </td>
+
+                        <td class="px-6 py-4">
+                            <?= htmlspecialchars($comment->commentContent) ?>
+                        </td>
+
+                        <td class="px-6 py-4">
+                            <?= $comment->commentCreatedAt ?>
+                        </td>
+                        <td class="px-6 py-4">
+                            <?= $comment->commentDeletedAt ?? "Not Deleted" ?>
+                        </td>
 
                         <td class="px-6 py-4 flex gap-2">
-                            <button
-                                class="px-3 py-1 bg-blue-600 hover:bg-blue-700 rounded text-white font-semibold editBtn"
-                                data-id="1" data-comment="Great article! I learned a lot.">
+                            <button class="px-3 py-1 bg-blue-600 hover:bg-blue-700 rounded text-white font-semibold"
+                                onclick="openEditCommentModal(
+                        <?= $comment->Comment_id ?>,
+                        '<?= htmlspecialchars($comment->commentContent) ?>'
+                    )">
                                 Edit
                             </button>
-                            <form method="POST" action="#"
+
+                            <form method="POST"
                                 onsubmit="return confirm('Are you sure you want to delete this comment?')">
-                                <input type="hidden" name="comment_id" value="1">
-                                <button type="submit"
-                                    class="px-3 py-1 bg-red-600 hover:bg-red-700 rounded text-white font-semibold">Delete</button>
+                                <input type="hidden" name="comment_id" value="<?= $comment->Comment_id ?>">
+                                <button type="submit" name="delete_comment"
+                                    class="px-3 py-1 bg-red-600 hover:bg-red-700 rounded text-white font-semibold">
+                                    Delete
+                                </button>
                             </form>
                         </td>
+                    </tr>
+                    <?php endforeach; ?>
                 </tbody>
+
             </table>
         </div>
     </main>
 
     <div id="editCommentModal"
         class="flex fixed inset-0 bg-black bg-opacity-70 hidden items-center justify-center z-50">
+
         <div class="bg-gray-900 w-full max-w-md rounded-xl border border-gray-700 p-6">
             <div class="flex justify-between items-center mb-4">
                 <h2 class="text-2xl font-bold text-red-500">Edit Comment</h2>
                 <button id="closeEditCommentModal" class="text-gray-400 hover:text-white text-xl">&times;</button>
             </div>
 
-            <form method="POST" action="comments.php" class="space-y-4">
+            <form method="POST" action="admin_comments.php" class="space-y-4">
                 <input type="hidden" name="edit_comment" value="1">
                 <input type="hidden" name="comment_id" id="editCommentId">
 
                 <div>
                     <label class="block mb-1 text-sm font-semibold">Comment</label>
-                    <textarea id="editCommentText" name="commentText" required
+                    <textarea id="editCommentText" name="content" required
                         class="w-full px-4 py-2 rounded-lg bg-gray-800 border border-gray-600 text-white focus:outline-none focus:border-red-500"></textarea>
                 </div>
 
@@ -138,6 +200,28 @@
         </div>
     </div>
 
+
 </body>
+<script>
+const editCommentModal = document.getElementById('editCommentModal');
+const closeEditCommentModal = document.getElementById('closeEditCommentModal');
+const cancelEditCommentModal = document.getElementById('cancelEditCommentModal');
+const editCommentId = document.getElementById('editCommentId');
+const editCommentText = document.getElementById('editCommentText');
+
+function openEditCommentModal(commentId, content) {
+    editCommentId.value = commentId;
+    editCommentText.value = content;
+    editCommentModal.classList.remove('hidden');
+}
+
+function closeEditComment() {
+    editCommentModal.classList.add('hidden');
+}
+
+closeEditCommentModal.addEventListener('click', closeEditComment);
+cancelEditCommentModal.addEventListener('click', closeEditComment);
+</script>
+
 
 </html>
