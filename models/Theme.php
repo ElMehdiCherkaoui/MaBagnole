@@ -89,4 +89,12 @@
             return "Problem Coneection";
         }
     }
+        public function countThemes()
+    {
+        $db = (new DataBase)->getConnection();
+        $sql = "SELECT COUNT(*) AS totalCount FROM Themes  ;";
+        $stmt = $db->prepare($sql);
+        $stmt->execute();
+        return $stmt->fetch(pdo::FETCH_OBJ);
+    }
 }

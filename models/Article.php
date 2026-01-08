@@ -54,7 +54,7 @@ class Article
         $db = (new DataBase)->getConnection();
         $sql = "SELECT * FROM Articles WHERE Article_id = :id";
         $stmt = $db->prepare($sql);
-        $stmt->bindParam(':id', $id, PDO::PARAM_INT);
+        $stmt->bindParam(':id', $id);
         $stmt->execute();
         return $stmt->fetch(PDO::FETCH_OBJ);
     }
@@ -127,6 +127,33 @@ class Article
         } else {
             return "Problem Coneection";
         }
+    }
+    public function countArticles()
+    {
+        $db = (new DataBase)->getConnection();
+        $sql = "SELECT COUNT(*) AS totalCount FROM Articles  ;";
+        $stmt = $db->prepare($sql);
+        $stmt->execute();
+        return $stmt->fetch(pdo::FETCH_OBJ);
+    }
+    public function listByTheme($themeId)
+    {
+        $db = (new DataBase())->getConnection();
+
+        $sql = "
+SELECT * FROM Articles a
+        LEFT JOIN Themes t ON a.articleThemeId = t.Theme_id
+        LEFT JOIN Users u ON a.articleUserId = u.Users_id
+        LEFT JOIN Article_Tags au on au.articleTagId = a.Article_id
+        LEFT JOIN Tags tg on tg.Tag_id = au.tagArticleId
+        WHERE a.articleThemeId = :themeid
+    ";
+
+        $stmt = $db->prepare($sql);
+        $stmt->bindParam(":themeid", $themeId);
+        $stmt->execute();
+
+        return $stmt->fetchAll(PDO::FETCH_OBJ);
     }
 
     public function searchArticles($query) {}

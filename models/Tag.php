@@ -61,4 +61,12 @@ class Tag
         $stmt->bindParam(':id', $id);
         return $stmt->execute();
     }
+            public function countTags()
+    {
+        $db = (new DataBase)->getConnection();
+        $sql = "SELECT COUNT(*) AS totalCount FROM Tags;";
+        $stmt = $db->prepare($sql);
+        $stmt->execute();
+        return $stmt->fetch(pdo::FETCH_OBJ);
+    }
 }

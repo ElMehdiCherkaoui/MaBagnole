@@ -5,6 +5,10 @@ $totalVehicles = (new Vehicle)->getTotalCount();
 $totalReservations = (new Reservation)->countTotalReservation();
 $totalReviews = (new Review())->countReviews();
 $totalCategorys = (new Category())->countCategory();
+$totalThemes   = (new Theme())->countThemes();
+$totalArticles = (new Article())->countArticles();
+$totalTags     = (new Tag())->countTags();
+$totalComments = (new Comment())->countAll();
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -109,6 +113,49 @@ $totalCategorys = (new Category())->countCategory();
                     <i class="fas fa-tags text-red-400 text-2xl"></i>
                 </div>
                 <p class="text-4xl font-bold text-gray-100 text-center"><?= $totalCategorys ?></p>
+            </div>
+            <div
+                class="bg-gray-800 p-6 rounded-2xl border-l-4 border-red-500 shadow hover:scale-105 transform transition">
+                <div class="flex items-center justify-between mb-4">
+                    <h2 class="text-xl font-semibold text-red-400">Themes</h2>
+                    <i class="fas fa-clipboard-list text-red-400 text-2xl"></i>
+                </div>
+                <p class="text-4xl font-bold text-gray-100 text-center">
+                    <?= $totalThemes->totalCount ?>
+                </p>
+            </div>
+
+            <div
+                class="bg-gray-800 p-6 rounded-2xl border-l-4 border-red-500 shadow hover:scale-105 transform transition">
+                <div class="flex items-center justify-between mb-4">
+                    <h2 class="text-xl font-semibold text-red-400">Articles</h2>
+                    <i class="fas fa-newspaper text-red-400 text-2xl"></i>
+                </div>
+                <p class="text-4xl font-bold text-gray-100 text-center">
+                    <?= $totalArticles->totalCount ?>
+                </p>
+            </div>
+
+            <div
+                class="bg-gray-800 p-6 rounded-2xl border-l-4 border-red-500 shadow hover:scale-105 transform transition">
+                <div class="flex items-center justify-between mb-4">
+                    <h2 class="text-xl font-semibold text-red-400">Tags</h2>
+                    <i class="fas fa-tags text-red-400 text-2xl"></i>
+                </div>
+                <p class="text-4xl font-bold text-gray-100 text-center">
+                    <?= $totalTags->totalCount ?>
+                </p>
+            </div>
+
+            <div
+                class="bg-gray-800 p-6 rounded-2xl border-l-4 border-red-500 shadow hover:scale-105 transform transition">
+                <div class="flex items-center justify-between mb-4">
+                    <h2 class="text-xl font-semibold text-red-400">Comments</h2>
+                    <i class="fas fa-comments text-red-400 text-2xl"></i>
+                </div>
+                <p class="text-4xl font-bold text-gray-100 text-center">
+                    <?= $totalComments->totalCountComment ?>
+                </p>
             </div>
         </div>
 
