@@ -667,7 +667,7 @@ VALUES (1, 2),
     (2, 4),
     (3, 5);
 
-SELECT * FROM Users;
+SELECT * FROM Articles;
 
 SELECT * FROM Articles a
         LEFT JOIN Themes t ON a.articleThemeId = t.Theme_id
@@ -676,3 +676,26 @@ SELECT * FROM Articles a
         LEFT JOIN Tags tg on tg.Tag_id = au.tagArticleId
         WHERE a.articleThemeId = 2;
 
+
+SELECT *
+        FROM Comments c
+        LEFT JOIN Users u ON c.commentUserId = u.Users_id
+        LEFT JOIN Articles a ON c.commentArticleId = a.Article_id
+        WHERE c.commentArticleId = 1
+          AND c.commentDeletedAt IS NULL
+        ORDER BY c.commentCreatedAt DESC
+
+
+        UPDATE Comments
+        SET commentDeletedAt = NOW()
+        WHERE Comment_id = 17;
+
+
+        SELECT * FROM Articles a
+        LEFT JOIN Themes t ON a.articleThemeId = t.Theme_id
+        LEFT JOIN Users u ON a.articleUserId = u.Users_id
+        LEFT JOIN Article_Tags au ON au.articleTagId = a.Article_id
+        LEFT JOIN Tags tg ON tg.Tag_id = au.tagArticleId
+        WHERE a.articleThemeId = 1 AND articleStatus = 'approved'
+            ORDER BY created_at DESC
+            LIMIT 2 OFFSET 3

@@ -2,9 +2,9 @@
 require_once __DIR__ . '/../../autoload.php';
 session_start();
 
-// Check if user is logged in
+
 if (!isset($_SESSION['userEmailLogin'])) {
-    header("Location: login.php");  // Redirect to login if not logged in
+    header("Location: login.php"); 
     exit();
 }
 

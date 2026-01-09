@@ -43,7 +43,11 @@ class Article
     public function listArticles()
     {
         $db = (new DataBase)->getConnection();
-        $sql = "SELECT * FROM Articles a LEFT JOIN Themes t on a.articleThemeId = t.Theme_id LEFT JOIN Users u on u.Users_id = a.articleUserId ";
+        $sql = "SELECT * FROM Articles a
+        LEFT JOIN Themes t ON a.articleThemeId = t.Theme_id
+        LEFT JOIN Users u ON a.articleUserId = u.Users_id
+        LEFT JOIN Article_Tags au ON au.articleTagId = a.Article_id
+        LEFT JOIN Tags tg ON tg.Tag_id = au.tagArticleId ";
         $stmt = $db->prepare($sql);
         $stmt->execute();
         return $stmt->fetchAll(PDO::FETCH_OBJ);
@@ -52,7 +56,12 @@ class Article
     public function getArticle($id)
     {
         $db = (new DataBase)->getConnection();
-        $sql = "SELECT * FROM Articles WHERE Article_id = :id";
+        $sql = "SELECT * FROM Articles a
+        LEFT JOIN Themes t ON a.articleThemeId = t.Theme_id
+        LEFT JOIN Users u ON a.articleUserId = u.Users_id
+        LEFT JOIN Article_Tags au ON au.articleTagId = a.Article_id
+        LEFT JOIN Tags tg ON tg.Tag_id = au.tagArticleId 
+        WHERE Article_id = :id";
         $stmt = $db->prepare($sql);
         $stmt->bindParam(':id', $id);
         $stmt->execute();
@@ -73,9 +82,7 @@ class Article
         $stmt->bindParam(':articleStatus', $this->articleStatus);
         $stmt->execute();
         if ($stmt) {
-            return 'success';
-        } else {
-            return "Problem Coneection";
+            return $db->lastInsertId();;
         }
     }
 
@@ -128,36 +135,142 @@ class Article
             return "Problem Coneection";
         }
     }
-    public function countArticles()
+    public function paginateByTheme($themeId,  $page,  $perPage)
     {
-        $db = (new DataBase)->getConnection();
-        $sql = "SELECT COUNT(*) AS totalCount FROM Articles  ;";
-        $stmt = $db->prepare($sql);
-        $stmt->execute();
-        return $stmt->fetch(pdo::FETCH_OBJ);
-    }
-    public function listByTheme($themeId)
-    {
-        $db = (new DataBase())->getConnection();
 
-        $sql = "
-SELECT * FROM Articles a
+        $db = (new DataBase)->getConnection();
+        $offset = ($page - 1) * $perPage;
+
+        $sql = "SELECT * FROM Articles a
         LEFT JOIN Themes t ON a.articleThemeId = t.Theme_id
         LEFT JOIN Users u ON a.articleUserId = u.Users_id
-        LEFT JOIN Article_Tags au on au.articleTagId = a.Article_id
-        LEFT JOIN Tags tg on tg.Tag_id = au.tagArticleId
-        WHERE a.articleThemeId = :themeid
-    ";
+        LEFT JOIN Article_Tags au ON au.articleTagId = a.Article_id
+        LEFT JOIN Tags tg ON tg.Tag_id = au.tagArticleId
+        WHERE a.articleThemeId = :themeid AND articleStatus = 'approved'
+            ORDER BY created_at DESC
+            LIMIT :limit OFFSET :offset";
 
         $stmt = $db->prepare($sql);
-        $stmt->bindParam(":themeid", $themeId);
+        $stmt->bindParam(':themeid', $themeId, PDO::PARAM_INT);
+        $stmt->bindParam(':limit', $perPage, PDO::PARAM_INT);
+        $stmt->bindParam(':offset', $offset, PDO::PARAM_INT);
         $stmt->execute();
 
         return $stmt->fetchAll(PDO::FETCH_OBJ);
     }
 
-    public function searchArticles($query) {}
-    public function filterArticlesByTags($tags) {}
-    public function listArticlesByStatus($status) {}
-    public function paginateArticles($page, $perPage) {}
+public function paginateByThemeAndSearch($themeId, $search, $page, $perPage)
+{
+    $db = (new DataBase())->getConnection();
+    $offset = ($page - 1) * $perPage;
+
+    $sql = "SELECT * FROM Articles a
+            LEFT JOIN Themes t ON a.articleThemeId = t.Theme_id
+            LEFT JOIN Users u ON a.articleUserId = u.Users_id
+            LEFT JOIN Article_Tags au ON au.articleTagId = a.Article_id
+            LEFT JOIN Tags tg ON tg.Tag_id = au.tagArticleId
+            WHERE a.articleThemeId = :themeId 
+              AND a.articleStatus = 'approved' 
+              AND a.articleTitle LIKE :search
+            ORDER BY a.created_at DESC
+            LIMIT :limit OFFSET :offset";
+
+    $stmt = $db->prepare($sql);
+    $stmt->bindValue(':themeId', $themeId, PDO::PARAM_INT);
+    $stmt->bindValue(':search', "%$search%");
+    $stmt->bindValue(':limit', $perPage, PDO::PARAM_INT);
+    $stmt->bindValue(':offset', $offset, PDO::PARAM_INT);
+    $stmt->execute();
+
+    return $stmt->fetchAll(PDO::FETCH_OBJ);
+}
+
+
+public function paginateByThemeAndTag($themeId, $tag, $page, $perPage)
+{
+    $db = (new DataBase())->getConnection();
+    $offset = ($page - 1) * $perPage;
+
+    $sql = "SELECT *
+            FROM Articles a
+            LEFT JOIN Themes t ON a.articleThemeId = t.Theme_id
+            LEFT JOIN Users u ON a.articleUserId = u.Users_id
+            LEFT JOIN Article_Tags au ON au.articleTagId = a.Article_id
+            LEFT JOIN Tags tg ON tg.Tag_id = au.tagArticleId
+            WHERE a.articleThemeId = :themeId 
+              AND a.articleStatus = 'approved'
+              AND tg.label = :tag
+            ORDER BY a.created_at DESC
+            LIMIT :limit OFFSET :offset";
+
+    $stmt = $db->prepare($sql);
+    $stmt->bindValue(':themeId', $themeId, PDO::PARAM_INT);
+    $stmt->bindValue(':tag', $tag);
+    $stmt->bindValue(':limit', $perPage, PDO::PARAM_INT);
+    $stmt->bindValue(':offset', $offset, PDO::PARAM_INT);
+    $stmt->execute();
+
+    return $stmt->fetchAll(PDO::FETCH_OBJ);
+}
+
+
+    public function countByTheme($themeId)
+    {
+        $db = (new DataBase())->getConnection();
+        $stmt = $db->prepare("SELECT COUNT(*) as totalByTheme FROM Articles WHERE articleThemeId = :themeId");
+        $stmt->bindParam(':themeId', $themeId, PDO::PARAM_INT);
+        $stmt->execute();
+        return $stmt->fetch(pdo::FETCH_OBJ);
+    }
+
+public function countByThemeAndSearch($themeId, $search)
+{
+    $db = (new DataBase())->getConnection();
+    
+    $stmt = $db->prepare(
+        "SELECT COUNT(*) AS totalByThemeAndSearch 
+         FROM Articles 
+         WHERE articleThemeId = :themeId 
+           AND articleTitle LIKE :search"
+    );
+
+    $stmt->bindValue(':themeId', $themeId, PDO::PARAM_INT);
+    $stmt->bindValue(':search', "%$search%");
+    $stmt->execute();
+
+    return $stmt->fetch(PDO::FETCH_OBJ);
+}
+
+
+public function countByThemeAndTag($themeId, $tag)
+{
+    $db = (new DataBase())->getConnection();
+
+    $stmt = $db->prepare(
+        "SELECT COUNT(*) AS totalByThemeAndTag
+         FROM Articles a
+         JOIN Article_Tags au ON a.Article_id = au.articleTagId
+         JOIN Tags tg ON tg.Tag_id = au.tagArticleId
+         WHERE a.articleThemeId = :themeId AND tg.label = :tag"
+    );
+
+    $stmt->bindValue(':themeId', $themeId, PDO::PARAM_INT);
+    $stmt->bindValue(':tag', $tag);
+    $stmt->execute();
+
+    return $stmt->fetch(PDO::FETCH_OBJ);
+}
+
+
+
+
+
+    public function countArticles()
+    {
+        $db = (new DataBase)->getConnection();
+        $sql = "SELECT COUNT(*) FROM Articles  ;";
+        $stmt = $db->prepare($sql);
+        $stmt->execute();
+        return $stmt->fetch(pdo::FETCH_OBJ);
+    }
 }

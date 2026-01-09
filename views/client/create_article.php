@@ -1,14 +1,43 @@
-<?php 
+<?php
 require_once __DIR__ . '/../../autoload.php';
 session_start();
 
-// Check if user is logged in
 if (!isset($_SESSION['userEmailLogin'])) {
-    header("Location: login.php");  // Redirect to login if not logged in
+    header("Location: login.php");
     exit();
 }
 
-$user = (new User)->listUserLogged($_SESSION['userEmailLogin']);
+$themes = (new Theme())->listThemes();
+$user   = (new User())->listUserLogged($_SESSION['userEmailLogin']);
+$tags   = (new Tag())->listTags();
+$add_tag = new ArticleTag();
+
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+
+    $article = new Article();
+    $article->articleTitle   = trim($_POST['title']);
+    $article->articleContent = trim($_POST['content']);
+    $article->articleThemeId = (int) $_POST['theme'];
+    $article->articleUserId  = $user->Users_Id;
+    $article->media_url      = null;
+    $article->articleStatus  = 'pending';
+
+    $articleId = $article->addArticle();
+
+    if ($articleId) {
+
+        if (!empty($_POST['tags'])) {
+            foreach ($_POST['tags'] as $tagId) {
+                $add_tag->addTag($articleId, (int)$tagId);
+            }
+        }
+
+        header("Location: themes.php");
+        exit;
+    }
+}
+
 ?>
 
 <!DOCTYPE html>
@@ -41,7 +70,7 @@ $user = (new User)->listUserLogged($_SESSION['userEmailLogin']);
     <div class="max-w-7xl mx-auto py-8 px-4">
         <h1 class="text-3xl font-bold text-gray-800 mb-6">Create a New Article</h1>
 
-        <form action="save_article.php" method="POST" class="space-y-6">
+        <form method="POST" class="space-y-6">
             <div>
                 <label for="title" class="block text-gray-700 font-medium">Article Title</label>
                 <input type="text" name="title" id="title" class="w-full p-3 border border-gray-300 rounded-lg"
@@ -57,14 +86,24 @@ $user = (new User)->listUserLogged($_SESSION['userEmailLogin']);
             <div>
                 <label for="theme" class="block text-gray-700 font-medium">Select Theme</label>
                 <select name="theme" id="theme" class="w-full p-3 border border-gray-300 rounded-lg" required>
-                    <option value="car-maintenance">Car Maintenance</option>
-                    <option value="vehicle-reviews">Vehicle Reviews</option>
-                    <option value="travel-tips">Travel Tips</option>
-                    <option value="car-insurance">Car Insurance</option>
-                    <option value="car-gadgets">Car Gadgets</option>
-                    <option value="road-safety">Road Safety</option>
+                    <?php foreach ($themes as $theme): ?>
+                    <option value="<?= $theme->Theme_id ?>"><?= $theme->themeTitle ?></option>
+                    <?php endforeach ?>
                 </select>
             </div>
+            <div>
+                <label class="block text-gray-700 font-medium">Select Tags</label>
+                <div class="mt-2 space-y-2">
+                    <?php foreach ($tags as $tag): ?>
+                    <label class="inline-flex items-center mr-4">
+                        <input type="checkbox" name="tags[]" value="<?= $tag->Tag_id ?>" class="form-checkbox">
+                        <span class="ml-2"><?= $tag->label ?></span>
+                    </label>
+                    <?php endforeach; ?>
+                </div>
+            </div>
+
+
 
             <div>
                 <button type="submit"

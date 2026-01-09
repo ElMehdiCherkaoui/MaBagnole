@@ -50,8 +50,7 @@ class Comment
     public function listByArticle($articleId)
     {
         $db = (new DataBase)->getConnection();
-        $sql = "
-        SELECT *
+        $sql = "SELECT *
         FROM Comments c
         LEFT JOIN Users u ON c.commentUserId = u.Users_id
         LEFT JOIN Articles a ON c.commentArticleId = a.Article_id
@@ -83,8 +82,7 @@ class Comment
     public function editComment($commentId)
     {
         $db = (new DataBase)->getConnection();
-        $sql = "
-        UPDATE Comments
+        $sql = "UPDATE Comments
         SET commentContent = :content
         WHERE Comment_id = :commentId
           AND commentDeletedAt IS NULL
@@ -97,8 +95,7 @@ class Comment
     public function softDeleteComment($commentId)
     {
         $db = (new DataBase)->getConnection();
-        $sql = "
-        UPDATE Comments
+        $sql = "UPDATE Comments
         SET commentDeletedAt = NOW()
         WHERE Comment_id = :commentId
     ";

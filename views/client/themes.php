@@ -1,3 +1,18 @@
+<?php 
+require_once __DIR__ . '/../../autoload.php';
+session_start();
+
+
+if (!isset($_SESSION['userEmailLogin'])) {
+    header("Location: login.php"); 
+    exit();
+}
+
+$user = (new User)->listUserLogged($_SESSION['userEmailLogin']);
+
+$theme = new theme;
+$themes = $theme->listThemes();
+?>
 <!DOCTYPE html>
 <html lang="en">
 
@@ -35,7 +50,22 @@
                 Create New Article
             </a>
         </div>
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-6" id="themes-container">
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-6">
+            <?php foreach($themes as $them): ?>
+            <div class="bg-white shadow-lg rounded-lg p-6 hover:shadow-xl transition transform hover:-translate-y-1">
+                <h2 class="text-xl font-semibold text-gray-800"><?= $them->themeTitle ?></h2>
+                <p class="text-gray-600 mt-2"><?= $them->themeDescription ?></p>
+                <form action="articles.php" method="POST">
+                    <input type="hidden" name="themeId" value="<?= $them->Theme_id ?>">
+                    <button type="submit" class="text-blue-600 mt-4 inline-block">
+                        Explore Articles
+                    </button>
+                </form>
+            </div>
+            <?php endforeach ?>
+
+
         </div>
 
         <div class="flex justify-center mt-6">
@@ -50,64 +80,7 @@
         </div>
     </footer>
 
-    <script>
-    const themes = [{
-            id: 1,
-            name: "Car Maintenance",
-            description: "Explore articles on maintaining your car efficiently.",
-            slug: "car-maintenance"
-        },
-        {
-            id: 2,
-            name: "Vehicle Reviews",
-            description: "Read reviews on the latest vehicles.",
-            slug: "vehicle-reviews"
-        },
-        {
-            id: 3,
-            name: "Travel Tips",
-            description: "Useful tips for traveling by car.",
-            slug: "travel-tips"
-        },
-        {
-            id: 4,
-            name: "Car Insurance",
-            description: "Find out more about car insurance options.",
-            slug: "car-insurance"
-        },
-        {
-            id: 5,
-            name: "Car Gadgets",
-            description: "Discover the latest gadgets for your vehicle.",
-            slug: "car-gadgets"
-        },
-        {
-            id: 6,
-            name: "Road Safety",
-            description: "Learn about road safety and driving best practices.",
-            slug: "road-safety"
-        }
-    ];
 
-    // Function to display themes dynamically
-    function displayThemes() {
-        const container = document.getElementById('themes-container');
-        themes.forEach(theme => {
-            const themeCard = document.createElement('div');
-            themeCard.className =
-                "bg-white shadow-lg rounded-lg p-6 hover:shadow-xl transition transform hover:-translate-y-1";
-            themeCard.innerHTML = `
-                    <h2 class="text-xl font-semibold text-gray-800">${theme.name}</h2>
-                    <p class="text-gray-600 mt-2">${theme.description}</p>
-                    <a href="articles.php?theme=${theme.slug}" class="text-blue-600 mt-4 inline-block">Explore Articles</a>
-                `;
-            container.appendChild(themeCard);
-        });
-    }
-
-    // Call the function to display themes on page load
-    window.onload = displayThemes;
-    </script>
 
 </body>
 
